@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unit converter screen -->
+    <string name="conv_back">Zpět na kategorie</string>
+    <string name="conv_from">Z</string>
+    <string name="conv_to">Na</string>
+    <string name="conv_pick_from">Převést z</string>
+    <string name="conv_pick_to">Převést na</string>
+    <string name="conv_swap">Prohodit</string>
+    <string name="conv_swap_description">Prohodit jednotky</string>
+    <string name="conv_last_used">Naposledy použité</string>
+    <string name="conv_below_absolute_zero">Pod absolutní nulou (0 K)</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Amount: 12.5 Meter" -->
+    <string name="conv_amount_description">Hodnota: %1$s %2$s</string>
+    <string name="conv_result_description">Výsledek: %1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">Délka</string>
+    <string name="conv_category_area">Plocha</string>
+    <string name="conv_category_volume">Objem</string>
+    <string name="conv_category_speed">Rychlost</string>
+    <string name="conv_category_mass">Hmotnost</string>
+    <string name="conv_category_temperature">Teplota</string>
+    <string name="conv_category_power">Výkon</string>
+    <string name="conv_category_pressure">Tlak</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">Milimetr</string>
+    <string name="conv_unit_centimeter">Centimetr</string>
+    <string name="conv_unit_meter">Metr</string>
+    <string name="conv_unit_kilometer">Kilometr</string>
+    <string name="conv_unit_inch">Palec</string>
+    <string name="conv_unit_foot">Stopa</string>
+    <string name="conv_unit_yard">Yard</string>
+    <string name="conv_unit_mile">Míle</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">Čtvereční metr</string>
+    <string name="conv_unit_square_kilometer">Čtvereční kilometr</string>
+    <string name="conv_unit_hectare">Hektar</string>
+    <string name="conv_unit_acre">Akr</string>
+    <string name="conv_unit_square_foot">Čtvereční stopa</string>
+    <string name="conv_unit_square_mile">Čtvereční míle</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">Mililitr</string>
+    <string name="conv_unit_liter">Litr</string>
+    <string name="conv_unit_cubic_meter">Krychlový metr</string>
+    <string name="conv_unit_us_gallon">Americký galon</string>
+    <string name="conv_unit_us_quart">Americký kvart</string>
+    <string name="conv_unit_us_fluid_ounce">Americká kapalinová unce</string>
+    <string name="conv_unit_us_cup">Hrnek (USA)</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">Metr za sekundu</string>
+    <string name="conv_unit_kilometer_per_hour">Kilometr za hodinu</string>
+    <string name="conv_unit_mile_per_hour">Míle za hodinu</string>
+    <string name="conv_unit_foot_per_second">Stopa za sekundu</string>
+    <string name="conv_unit_knot">Uzel</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">Miligram</string>
+    <string name="conv_unit_gram">Gram</string>
+    <string name="conv_unit_kilogram">Kilogram</string>
+    <string name="conv_unit_tonne">Tuna</string>
+    <string name="conv_unit_ounce">Unce</string>
+    <string name="conv_unit_pound">Libra</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">Stupeň Celsia</string>
+    <string name="conv_unit_fahrenheit">Stupeň Fahrenheita</string>
+    <string name="conv_unit_kelvin">Kelvin</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">Watt</string>
+    <string name="conv_unit_kilowatt">Kilowatt</string>
+    <string name="conv_unit_megawatt">Megawatt</string>
+    <string name="conv_unit_metric_horsepower">Metrická koňská síla</string>
+    <string name="conv_unit_mechanical_horsepower">Mechanická koňská síla</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">Pascal</string>
+    <string name="conv_unit_kilopascal">Kilopascal</string>
+    <string name="conv_unit_bar">Bar</string>
+    <string name="conv_unit_atmosphere">Atmosféra</string>
+    <string name="conv_unit_psi">Libra na čtvereční palec</string>
+    <string name="conv_unit_mmhg">Milimetr rtuťového sloupce</string>
+</resources>

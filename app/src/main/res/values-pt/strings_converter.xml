@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- European Portuguese (Portugal) spelling, e.g. "Quilómetro"; lint's Portuguese word list is Brazilian. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="Typos">
+    <!-- Unit converter screen -->
+    <string name="conv_back">Voltar às categorias</string>
+    <string name="conv_from">De</string>
+    <string name="conv_to">Para</string>
+    <string name="conv_pick_from">Converter de</string>
+    <string name="conv_pick_to">Converter para</string>
+    <string name="conv_swap">Trocar</string>
+    <string name="conv_swap_description">Trocar unidades</string>
+    <!-- State description of the most recently used category tile. -->
+    <string name="conv_last_used">Última utilização</string>
+    <string name="conv_below_absolute_zero">Abaixo do zero absoluto (0 K)</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Valor: 12,5 Metro" -->
+    <string name="conv_amount_description">Valor: %1$s %2$s</string>
+    <string name="conv_result_description">Resultado: %1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">Comprimento</string>
+    <string name="conv_category_area">Área</string>
+    <string name="conv_category_volume">Volume</string>
+    <string name="conv_category_speed">Velocidade</string>
+    <string name="conv_category_mass">Peso / Massa</string>
+    <string name="conv_category_temperature">Temperatura</string>
+    <string name="conv_category_power">Potência</string>
+    <string name="conv_category_pressure">Pressão</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">Milímetro</string>
+    <string name="conv_unit_centimeter">Centímetro</string>
+    <string name="conv_unit_meter">Metro</string>
+    <string name="conv_unit_kilometer">Quilómetro</string>
+    <string name="conv_unit_inch">Polegada</string>
+    <string name="conv_unit_foot">Pé</string>
+    <string name="conv_unit_yard">Jarda</string>
+    <string name="conv_unit_mile">Milha</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">Metro quadrado</string>
+    <string name="conv_unit_square_kilometer">Quilómetro quadrado</string>
+    <string name="conv_unit_hectare">Hectare</string>
+    <string name="conv_unit_acre">Acre</string>
+    <string name="conv_unit_square_foot">Pé quadrado</string>
+    <string name="conv_unit_square_mile">Milha quadrada</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">Mililitro</string>
+    <string name="conv_unit_liter">Litro</string>
+    <string name="conv_unit_cubic_meter">Metro cúbico</string>
+    <string name="conv_unit_us_gallon">Galão americano</string>
+    <string name="conv_unit_us_quart">Quarto de galão americano</string>
+    <string name="conv_unit_us_fluid_ounce">Onça líquida americana</string>
+    <string name="conv_unit_us_cup">Chávena (EUA)</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">Metro por segundo</string>
+    <string name="conv_unit_kilometer_per_hour">Quilómetro por hora</string>
+    <string name="conv_unit_mile_per_hour">Milha por hora</string>
+    <string name="conv_unit_foot_per_second">Pé por segundo</string>
+    <string name="conv_unit_knot">Nó</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">Miligrama</string>
+    <string name="conv_unit_gram">Grama</string>
+    <string name="conv_unit_kilogram">Quilograma</string>
+    <string name="conv_unit_tonne">Tonelada métrica</string>
+    <string name="conv_unit_ounce">Onça</string>
+    <string name="conv_unit_pound">Libra</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">Celsius</string>
+    <string name="conv_unit_fahrenheit">Fahrenheit</string>
+    <string name="conv_unit_kelvin">Kelvin</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">Watt</string>
+    <string name="conv_unit_kilowatt">Quilowatt</string>
+    <string name="conv_unit_megawatt">Megawatt</string>
+    <string name="conv_unit_metric_horsepower">Cavalo-vapor métrico</string>
+    <string name="conv_unit_mechanical_horsepower">Cavalo-vapor mecânico</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">Pascal</string>
+    <string name="conv_unit_kilopascal">Quilopascal</string>
+    <string name="conv_unit_bar">Bar</string>
+    <string name="conv_unit_atmosphere">Atmosfera</string>
+    <string name="conv_unit_psi">Libra por polegada quadrada</string>
+    <string name="conv_unit_mmhg">Milímetro de mercúrio</string>
+</resources>

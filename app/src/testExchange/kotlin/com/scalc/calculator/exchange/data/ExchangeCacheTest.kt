@@ -26,8 +26,10 @@ import org.junit.Test
 import org.junit.rules.TemporaryFolder
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
 import java.io.DataOutputStream
 import java.io.File
+import java.math.BigDecimal
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class ExchangeCacheTest {
@@ -115,11 +117,112 @@ class ExchangeCacheTest {
     }
 
     @Test
+    fun serializerKeepsPerCurrencyDatesAndWritesTheCurrentVersion() = runTest {
+        val blended = fullCache.copy(
+            table = SampleRates.table(
+                fetchedAtMillis = t0,
+                rateDate = "2026-11-12",
+                rateDates = mapOf("PLN" to "2026-11-11", "JPY" to "2026-11-06"),
+            ),
+        )
+        val restored = roundTrip(blended)
+        assertEquals(blended, restored)
+        assertEquals(RateSourceKind.FRANKFURTER_BLENDED, restored.table?.source)
+        assertEquals("2026-11-11", restored.table?.rateDateOf("PLN"))
+        assertEquals("2026-11-06", restored.table?.rateDateOf("JPY"))
+        assertEquals("2026-11-12", restored.table?.rateDate)
+
+        val bytes = ByteArrayOutputStream().also { ExchangeCacheSerializer.writeTo(blended, it) }.toByteArray()
+        assertEquals(2, ExchangeCacheSerializer.VERSION)
+        assertEquals(ExchangeCacheSerializer.VERSION, DataInputStream(ByteArrayInputStream(bytes)).readInt())
+    }
+
+    /** Bytes in the format of earlier app versions (version 1: one rate date for all currencies). */
+    private fun versionOneBytes(source: String = RateSourceKind.FRANKFURTER_ECB.name): ByteArray =
+        ByteArrayOutputStream().also { out ->
+            DataOutputStream(out).apply {
+                writeInt(ExchangeCacheSerializer.VERSION_SINGLE_RATE_DATE)
+                writeBoolean(true)
+                writeUTF("2026-11-10")
+                writeLong(t0)
+                writeUTF(source)
+                writeInt(SampleRates.RATES.size)
+                SampleRates.RATES.forEach { (code, rate) ->
+                    writeUTF(code)
+                    writeUTF(rate.toString())
+                }
+                writeInt(SampleRates.NAMES.size)
+                SampleRates.NAMES.forEach { (code, name) ->
+                    writeUTF(code)
+                    writeUTF(name)
+                }
+                writeBoolean(true)
+                writeUTF("W/\"ecb-only\"")
+                writeLong(t0 - 5)
+                writeLong(t0)
+                writeUTF("CZK")
+                writeUTF("JPY")
+            }
+        }.toByteArray()
+
+    @Test
+    fun versionOneCachesAreMigrated() = runTest {
+        val migrated = ExchangeCacheSerializer.readFrom(ByteArrayInputStream(versionOneBytes()))
+        val table = migrated.table!!
+
+        assertEquals(RateSourceKind.FRANKFURTER_ECB, table.source)
+        assertEquals(SampleRates.RATES.keys, table.rates.keys)
+        assertEquals(0, BigDecimal("24.378").compareTo(table.rateOf("CZK")))
+        assertEquals("Czech Koruna", table.currencyOf("CZK")?.name)
+        assertEquals(t0, table.fetchedAtMillis)
+        // The single old date applies to every currency.
+        assertEquals("2026-11-10", table.rateDate)
+        assertEquals(SampleRates.RATES.keys.associateWith { "2026-11-10" }, table.rateDates)
+        // The validator belonged to the old ECB-only URL: dropped, so the next refresh downloads in full.
+        assertNull(migrated.etag)
+        // Schedule and selection are kept.
+        assertEquals(t0 - 5, migrated.lastAutoAttemptMillis)
+        assertEquals(t0, migrated.lastSuccessMillis)
+        assertEquals("CZK" to "JPY", migrated.selectedFrom to migrated.selectedTo)
+
+        // Written back in the current format, it reads the same.
+        assertEquals(migrated, roundTrip(migrated))
+        // Version 1 files of the ECB fallback stay ECB tables.
+        assertEquals(
+            RateSourceKind.ECB_DIRECT,
+            ExchangeCacheSerializer.readFrom(ByteArrayInputStream(versionOneBytes(source = "ECB_DIRECT"))).table?.source,
+        )
+    }
+
+    @Test
+    fun versionOneFileIsMigratedOnDisk() = runTest {
+        val file = File(temporaryFolder.root, ExchangeModule.CACHE_FILE_NAME)
+        file.writeBytes(versionOneBytes())
+
+        val (store, job) = openStore(file)
+        val repository = repositoryOn(store)
+        val state = repository.state.first { it.loaded }
+        assertEquals(RateSourceKind.FRANKFURTER_ECB, state.table?.source)
+        assertEquals("2026-11-10", state.table?.rateDateOf("USD"))
+        assertEquals("CZK", state.selectedFrom)
+        assertEquals(t0, state.lastSuccessMillis)
+
+        // The next write stores the current format.
+        repository.setSelection("GBP", "USD")
+        job.cancelAndJoin()
+        assertEquals(ExchangeCacheSerializer.VERSION, DataInputStream(file.inputStream()).use { it.readInt() })
+        val (reopened, _) = openStore(file)
+        assertEquals(state.table, reopened.data.first().table)
+        assertEquals("GBP", reopened.data.first().selectedFrom)
+    }
+
+    @Test
     fun serializerRejectsCorruptData() = runTest {
         val valid = ByteArrayOutputStream().also { ExchangeCacheSerializer.writeTo(fullCache, it) }.toByteArray()
         assertCorrupt(ByteArray(0))
         assertCorrupt(valid.copyOf(valid.size / 2))
         assertCorrupt(byteArrayOf(0, 0, 0, 99) + valid.copyOfRange(4, valid.size))
+        assertCorrupt(byteArrayOf(0, 0, 0, 3) + valid.copyOfRange(4, valid.size))
         assertCorrupt(ByteArray(64) { (it * 37).toByte() })
 
         // Structurally valid but semantically wrong: unknown source.
@@ -151,6 +254,23 @@ class ExchangeCacheTest {
             }
         }.toByteArray()
         assertCorrupt(onlyEur)
+
+        // Version 2 rows need a valid date.
+        val undatedRate = ByteArrayOutputStream().also { out ->
+            DataOutputStream(out).apply {
+                writeInt(ExchangeCacheSerializer.VERSION)
+                writeBoolean(true)
+                writeUTF("2026-11-10")
+                writeLong(t0)
+                writeUTF(RateSourceKind.FRANKFURTER_BLENDED.name)
+                writeInt(1)
+                writeUTF("USD")
+                writeUTF("1.1127")
+                writeUTF("soon")
+                writeInt(0)
+            }
+        }.toByteArray()
+        assertCorrupt(undatedRate)
     }
 
     @Test

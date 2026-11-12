@@ -1,12 +1,18 @@
 package com.scalc.calculator.converter.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -14,6 +20,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.heading
@@ -33,6 +41,7 @@ import com.scalc.calculator.ui.components.NumericKeypad
 import com.scalc.calculator.ui.components.PickerDialog
 import com.scalc.calculator.ui.components.PickerItem
 import com.scalc.calculator.ui.components.SelectorField
+import com.scalc.calculator.ui.components.VerticalSeparator
 import com.scalc.calculator.ui.theme.FluentDimens
 import com.scalc.calculator.ui.theme.FluentTheme
 
@@ -47,9 +56,31 @@ private val MinKeyRowHeight = FluentDimens.minTouch
 /** Which unit selector opened the picker dialog. */
 private enum class UnitSide { From, To }
 
+/** Side by side, the fields pane is a little wider than the keypad pane (as on the Exchange tab). */
+private const val FIELDS_PANE_WEIGHT = 1.2f
+
+/** Width of a unit selector when its amount sits beside it (side-by-side layout). */
+private val CompactSelectorWidth = 168.dp
+
+/** Space between a compact selector and its amount. */
+private val CompactSelectorGap = 8.dp
+
+/** Space between a selector's caption and its bordered box (see SelectorField). */
+private val SelectorLabelGap = 4.dp
+
+/** Arrangement of the conversion screen for the space it gets. */
+internal object ConverterLayout {
+    /**
+     * Landscape (wider than tall): fields on the left, keypad on the right, like the Exchange tab.
+     * Portrait: fields above the keypad.
+     */
+    fun sideBySide(widthDp: Float, heightDp: Float): Boolean = widthDp > heightDp
+}
+
 /**
  * Conversion screen of one category: header with back button, source amount, swap control,
- * converted value, formula hint, and the numeric keypad filling the remaining height.
+ * converted value, formula hint, and the numeric keypad filling the remaining height. In
+ * landscape ([ConverterLayout.sideBySide]) the fields are on the left and the keypad on the right.
  */
 @Composable
 internal fun ConversionPane(
@@ -63,27 +94,53 @@ internal fun ConversionPane(
 ) {
     var pickerSide by rememberSaveable { mutableStateOf<UnitSide?>(null) }
 
-    Column(modifier.fillMaxSize()) {
-        PaneHeader(title = stringResource(conversion.category.titleRes), onBack = onBack)
-        HorizontalSeparator()
-        FillOrScrollColumn(
-            minBottomHeight = MinKeyRowHeight * 4,
-            modifier = Modifier.weight(1f).fillMaxWidth(),
-            top = {
-                ConversionFields(
-                    conversion = conversion,
-                    onPickFrom = { pickerSide = UnitSide.From },
-                    onPickTo = { pickerSide = UnitSide.To },
-                    onSwap = onSwap,
+    BoxWithConstraints(modifier.fillMaxSize()) {
+        val sideBySide = ConverterLayout.sideBySide(maxWidth.value, maxHeight.value)
+        val fields: @Composable (compact: Boolean) -> Unit = { compact ->
+            ConversionFields(
+                conversion = conversion,
+                onPickFrom = { pickerSide = UnitSide.From },
+                onPickTo = { pickerSide = UnitSide.To },
+                onSwap = onSwap,
+                compact = compact,
+            )
+        }
+        val keypad: @Composable () -> Unit = {
+            NumericKeypad(
+                onKey = onKey,
+                bottomLeftKey = if (conversion.category.allowsNegative) NumericKey.ToggleSign else NumericKey.DoubleZero,
+            )
+        }
+        Column(Modifier.fillMaxSize()) {
+            PaneHeader(title = stringResource(conversion.category.titleRes), onBack = onBack)
+            HorizontalSeparator()
+            if (sideBySide) {
+                Row(Modifier.weight(1f).fillMaxWidth()) {
+                    Column(
+                        Modifier
+                            .weight(FIELDS_PANE_WEIGHT)
+                            .fillMaxHeight()
+                            .verticalScroll(rememberScrollState()),
+                    ) {
+                        fields(true)
+                    }
+                    VerticalSeparator()
+                    FillOrScrollColumn(
+                        minBottomHeight = MinKeyRowHeight * 4,
+                        modifier = Modifier.weight(1f).fillMaxHeight(),
+                        top = {},
+                        bottom = keypad,
+                    )
+                }
+            } else {
+                FillOrScrollColumn(
+                    minBottomHeight = MinKeyRowHeight * 4,
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                    top = { fields(false) },
+                    bottom = keypad,
                 )
-            },
-            bottom = {
-                NumericKeypad(
-                    onKey = onKey,
-                    bottomLeftKey = if (conversion.category.allowsNegative) NumericKey.ToggleSign else NumericKey.DoubleZero,
-                )
-            },
-        )
+            }
+        }
     }
 
     pickerSide?.let { side ->
@@ -127,6 +184,7 @@ private fun ConversionFields(
     onPickFrom: () -> Unit,
     onPickTo: () -> Unit,
     onSwap: () -> Unit,
+    compact: Boolean = false,
 ) {
     val colors = FluentTheme.colors
     val typography = FluentTheme.typography
@@ -138,15 +196,15 @@ private fun ConversionFields(
     val swapDescription = stringResource(R.string.conv_swap_description)
 
     Column(Modifier.fillMaxWidth().padding(horizontal = FluentDimens.gutter, vertical = 4.dp)) {
-        UnitSelector(stringResource(R.string.conv_from), fromName, conversion.from, onPickFrom)
-        AutoShrinkText(
-            text = "$amountText ${conversion.from.symbol}",
-            style = typography.displayMedium,
-            color = colors.textPrimary,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-                .semantics(mergeDescendants = true) { contentDescription = amountDescription },
+        UnitAmount(
+            label = stringResource(R.string.conv_from),
+            unitName = fromName,
+            unit = conversion.from,
+            onPick = onPickFrom,
+            amount = "$amountText ${conversion.from.symbol}",
+            amountColor = colors.textPrimary,
+            amountDescription = amountDescription,
+            compact = compact,
         )
         // The 44 dp swap button already separates the two halves; no extra vertical padding.
         Row(
@@ -164,15 +222,15 @@ private fun ConversionFields(
             )
             HorizontalSeparator(Modifier.weight(1f))
         }
-        UnitSelector(stringResource(R.string.conv_to), toName, conversion.to, onPickTo)
-        AutoShrinkText(
-            text = "${conversion.resultText} ${conversion.to.symbol}",
-            style = typography.displayMedium,
-            color = colors.accentText,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 4.dp)
-                .semantics(mergeDescendants = true) { contentDescription = resultDescription },
+        UnitAmount(
+            label = stringResource(R.string.conv_to),
+            unitName = toName,
+            unit = conversion.to,
+            onPick = onPickTo,
+            amount = "${conversion.resultText} ${conversion.to.symbol}",
+            amountColor = colors.accentText,
+            amountDescription = resultDescription,
+            compact = compact,
         )
         FluentText(
             conversion.formula,
@@ -191,13 +249,60 @@ private fun ConversionFields(
     }
 }
 
+/**
+ * A unit selector with its amount: underneath it (portrait) or to its right, centered on the
+ * selector's bordered box ([compact], side-by-side layout).
+ */
 @Composable
-private fun UnitSelector(label: String, unitName: String, unit: MeasureUnit, onClick: () -> Unit) {
+private fun UnitAmount(
+    label: String,
+    unitName: String,
+    unit: MeasureUnit,
+    onPick: () -> Unit,
+    amount: String,
+    amountColor: Color,
+    amountDescription: String,
+    compact: Boolean,
+) {
+    val style = FluentTheme.typography.displayMedium
+    val amountSemantics = Modifier.semantics(mergeDescendants = true) { contentDescription = amountDescription }
+    if (compact) {
+        // Shifts the amount below the selector's caption so both center on the bordered box.
+        val labelHeight = with(LocalDensity.current) { FluentTheme.typography.caption.lineHeight.toDp() }
+        Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+            UnitSelector(label, unitName, unit, onPick, Modifier.width(CompactSelectorWidth))
+            Spacer(Modifier.width(CompactSelectorGap))
+            AutoShrinkText(
+                text = amount,
+                style = style,
+                color = amountColor,
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = labelHeight + SelectorLabelGap)
+                    .then(amountSemantics),
+            )
+        }
+    } else {
+        UnitSelector(label, unitName, unit, onPick, Modifier.fillMaxWidth())
+        AutoShrinkText(
+            text = amount,
+            style = style,
+            color = amountColor,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp)
+                .then(amountSemantics),
+        )
+    }
+}
+
+@Composable
+private fun UnitSelector(label: String, unitName: String, unit: MeasureUnit, onClick: () -> Unit, modifier: Modifier) {
     SelectorField(
         label = label,
         value = unitName,
         supporting = unit.symbol,
         onClick = onClick,
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier,
     )
 }

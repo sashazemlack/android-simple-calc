@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">Вираз: %1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">Результат: %1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">Історія</string>
+    <string name="calc_paste">Вставити</string>
+    <string name="calc_copy">Копіювати</string>
+    <string name="calc_copied">Скопійовано</string>
+    <string name="calc_nothing_to_copy">Нічого копіювати</string>
+    <string name="calc_pasted">Вставлено</string>
+    <string name="calc_clipboard_empty">Буфер обміну порожній</string>
+    <string name="calc_clipboard_invalid">Буфер обміну не містить допустимого виразу</string>
+    <string name="calc_clipboard_too_long">Вираз задовгий для вставлення</string>
+    <string name="calc_clipboard_unavailable">Буфер обміну недоступний</string>
+    <string name="calc_clip_label">Результат обчислення</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">Неповний вираз</string>
+    <string name="calc_error_syntax">Неправильний вираз</string>
+    <string name="calc_error_division_by_zero">Ділити на нуль не можна</string>
+    <string name="calc_error_domain">Недопустиме значення для цієї функції</string>
+    <string name="calc_error_invalid_factorial">Факторіал визначено лише для цілих чисел ≥ 0</string>
+    <string name="calc_error_overflow">Результат занадто великий</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">Наукові функції</string>
+    <string name="calc_state_expanded">Розгорнуто</string>
+    <string name="calc_state_collapsed">Згорнуто</string>
+    <string name="calc_state_on">Увімкнено</string>
+    <string name="calc_state_off">Вимкнено</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">Очистити</string>
+    <string name="calc_key_percent">Відсоток</string>
+    <string name="calc_key_backspace">Видалити</string>
+    <string name="calc_key_divide">Поділити</string>
+    <string name="calc_key_multiply">Помножити</string>
+    <string name="calc_key_minus">Мінус</string>
+    <string name="calc_key_plus">Плюс</string>
+    <string name="calc_key_toggle_sign">Змінити знак</string>
+    <string name="calc_key_decimal">Десяткова крапка</string>
+    <string name="calc_key_equals">Дорівнює</string>
+    <string name="calc_key_sin">Синус</string>
+    <string name="calc_key_cos">Косинус</string>
+    <string name="calc_key_tan">Тангенс</string>
+    <string name="calc_key_asin">Арксинус</string>
+    <string name="calc_key_acos">Арккосинус</string>
+    <string name="calc_key_atan">Арктангенс</string>
+    <string name="calc_key_log">Десятковий логарифм</string>
+    <string name="calc_key_ln">Натуральний логарифм</string>
+    <string name="calc_key_pow10">Десять у степені</string>
+    <string name="calc_key_exp">e у степені</string>
+    <string name="calc_key_open_parenthesis">Ліва дужка</string>
+    <string name="calc_key_close_parenthesis">Права дужка</string>
+    <string name="calc_key_power">Степінь</string>
+    <string name="calc_key_sqrt">Квадратний корінь</string>
+    <string name="calc_key_factorial">Факторіал</string>
+    <string name="calc_key_pi">Пі</string>
+    <string name="calc_key_euler">Число Ейлера</string>
+    <string name="calc_key_inverse">Обернені функції</string>
+    <string name="calc_angle_degrees">Градуси</string>
+    <string name="calc_angle_radians">Радіани</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">Історія</string>
+    <plurals name="calc_history_count">
+        <item quantity="one">%d обчислення</item>
+        <item quantity="few">%d обчислення</item>
+        <item quantity="many">%d обчислень</item>
+        <item quantity="other">%d обчислення</item>
+    </plurals>
+    <string name="calc_history_clear">Очистити</string>
+    <string name="calc_history_clear_description">Очистити історію</string>
+    <string name="calc_history_back">Назад до клавіатури</string>
+    <string name="calc_history_empty">Обчислень ще немає.\nРезультати зʼявляться тут після натискання =.</string>
+    <string name="calc_history_cleared">Історію очищено</string>
+    <string name="calc_history_restore">Використати це обчислення</string>
+    <string name="calc_history_storage_failed">Не вдалося зберегти історію</string>
+</resources>

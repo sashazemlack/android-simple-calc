@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">从</string>
+    <string name="exch_to">到</string>
+    <string name="exch_swap">互换</string>
+    <string name="exch_swap_description">互换货币</string>
+    <string name="exch_pick_from">选择原货币</string>
+    <string name="exch_pick_to">选择目标货币</string>
+    <string name="exch_search_placeholder">搜索货币名称或代码</string>
+    <string name="exch_search_empty">没有匹配的货币</string>
+    <!-- %1$s = formatted amount, %2$s = currency name, e.g. "Amount: 12.5 Euro" -->
+    <string name="exch_amount_description">金额：%1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name, e.g. "Converted amount: 13.91 US Dollar" -->
+    <string name="exch_result_description">换算金额：%1$s %2$s</string>
+    <string name="exch_result_unavailable">无法显示换算金额</string>
+    <!-- %1$s = data source, e.g. "Source: central bank and other official rates blended by frankfurter.dev" -->
+    <string name="exch_attribution">%1$s · 交叉汇率在设备上计算</string>
+    <!-- Compact layout: both unit rates on one line, e.g. "1 EUR = 1.1127 USD · 1 USD = 0.898715 EUR" -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- Rate line of the selected pair when its rate is older than the newest rates.
+         %1$s = rate line, e.g. "1 EUR = 1.9949 ANG", %2$s = date of that rate, e.g. "11 Nov 2026" -->
+    <string name="exch_rate_dated">%1$s（截至%2$s）</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">正在刷新汇率</string>
+    <string name="exch_refresh_action">刷新汇率</string>
+    <string name="exch_feedback_updated">汇率已更新</string>
+    <string name="exch_feedback_failed">无法刷新汇率</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">正在加载汇率…</string>
+    <string name="exch_status_refreshing">正在刷新汇率…</string>
+    <!-- %1$s = download date and time, e.g. "12 Nov 2026, 10:15" -->
+    <string name="exch_status_fresh">汇率上次更新：%1$s</string>
+    <string name="exch_status_cached">正在使用缓存的汇率 · 上次更新：%1$s</string>
+    <string name="exch_status_stale">正在使用缓存的汇率（可能已过时） · 上次更新：%1$s</string>
+    <string name="exch_status_unavailable">无法获取汇率。向下滑动即可重试。</string>
+    <string name="exch_status_last_updated">上次更新：%1$s</string>
+    <!-- %1$s = newest date of the downloaded rates (provider date, not the download time), e.g. "12 Nov 2026" -->
+    <string name="exch_status_rate_date">%1$s的汇率</string>
+    <!-- Same for rates published by the European Central Bank (fallback source), e.g. "ECB reference rates of 11 Nov 2026" -->
+    <string name="exch_status_rate_date_ecb">%1$s的欧洲央行参考汇率</string>
+    <string name="exch_status_update_failed">更新失败。向下滑动即可重试。</string>
+    <!-- Joins two parts of the status detail line,
+         e.g. "Exchange rates of 12 Nov 2026 · Update failed. Swipe down to retry." -->
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">无网络连接。</string>
+    <string name="exch_error_server">汇率服务暂时不可用。</string>
+    <string name="exch_error_invalid_data">汇率服务返回了无效数据。</string>
+    <!-- Data sources (shown before "· cross rates calculated on device"). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">来源：中央银行及其他官方汇率，由 frankfurter.dev 汇总</string>
+    <!-- Rates downloaded by earlier app versions (European Central Bank data via frankfurter.dev) -->
+    <string name="exch_source_frankfurter">来源：欧洲中央银行（经由 frankfurter.dev）</string>
+    <string name="exch_source_ecb">来源：欧洲中央银行</string>
+</resources>

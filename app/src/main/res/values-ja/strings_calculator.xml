@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">式：%1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">結果：%1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">履歴</string>
+    <string name="calc_paste">貼り付け</string>
+    <string name="calc_copy">コピー</string>
+    <string name="calc_copied">コピーしました</string>
+    <string name="calc_nothing_to_copy">コピーする内容がありません</string>
+    <string name="calc_pasted">貼り付けました</string>
+    <string name="calc_clipboard_empty">クリップボードは空です</string>
+    <string name="calc_clipboard_invalid">クリップボードに有効な式がありません</string>
+    <string name="calc_clipboard_too_long">式が長すぎるため貼り付けできません</string>
+    <string name="calc_clipboard_unavailable">クリップボードを利用できません</string>
+    <string name="calc_clip_label">計算結果</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">式が不完全です</string>
+    <string name="calc_error_syntax">無効な式です</string>
+    <string name="calc_error_division_by_zero">0 で割ることはできません</string>
+    <string name="calc_error_domain">この関数には無効な値です</string>
+    <string name="calc_error_invalid_factorial">階乗には 0 以上の整数が必要です</string>
+    <string name="calc_error_overflow">結果が大きすぎます</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">関数電卓機能</string>
+    <string name="calc_state_expanded">展開</string>
+    <string name="calc_state_collapsed">折りたたみ</string>
+    <string name="calc_state_on">オン</string>
+    <string name="calc_state_off">オフ</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">クリア</string>
+    <string name="calc_key_percent">パーセント</string>
+    <string name="calc_key_backspace">削除</string>
+    <string name="calc_key_divide">割る</string>
+    <string name="calc_key_multiply">掛ける</string>
+    <string name="calc_key_minus">マイナス</string>
+    <string name="calc_key_plus">プラス</string>
+    <string name="calc_key_toggle_sign">符号の切り替え</string>
+    <string name="calc_key_decimal">小数点</string>
+    <string name="calc_key_equals">イコール</string>
+    <string name="calc_key_sin">サイン</string>
+    <string name="calc_key_cos">コサイン</string>
+    <string name="calc_key_tan">タンジェント</string>
+    <string name="calc_key_asin">アークサイン</string>
+    <string name="calc_key_acos">アークコサイン</string>
+    <string name="calc_key_atan">アークタンジェント</string>
+    <string name="calc_key_log">常用対数</string>
+    <string name="calc_key_ln">自然対数</string>
+    <string name="calc_key_pow10">10 の累乗</string>
+    <string name="calc_key_exp">e の累乗</string>
+    <string name="calc_key_open_parenthesis">左かっこ</string>
+    <string name="calc_key_close_parenthesis">右かっこ</string>
+    <string name="calc_key_power">累乗</string>
+    <string name="calc_key_sqrt">平方根</string>
+    <string name="calc_key_factorial">階乗</string>
+    <string name="calc_key_pi">円周率</string>
+    <string name="calc_key_euler">ネイピア数</string>
+    <string name="calc_key_inverse">逆関数</string>
+    <string name="calc_angle_degrees">度</string>
+    <string name="calc_angle_radians">ラジアン</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">履歴</string>
+    <plurals name="calc_history_count">
+        <item quantity="other">%d 件の計算</item>
+    </plurals>
+    <string name="calc_history_clear">クリア</string>
+    <string name="calc_history_clear_description">履歴をクリア</string>
+    <string name="calc_history_back">キーパッドに戻る</string>
+    <string name="calc_history_empty">計算履歴はまだありません。\n= を押すと、ここに結果が表示されます。</string>
+    <string name="calc_history_cleared">履歴をクリアしました</string>
+    <string name="calc_history_restore">この計算を使用</string>
+    <string name="calc_history_storage_failed">履歴を保存できませんでした</string>
+</resources>

@@ -137,7 +137,6 @@ fun AppRoot(container: AppContainer) {
                     onThemeModeChange = { mode ->
                         scope.launch { themeSaveFailed = !container.settingsRepository.setThemeMode(mode) }
                     },
-                    aboutTextRes = Flavor.aboutTextRes,
                     onDismiss = {
                         showSettings = false
                         themeSaveFailed = false

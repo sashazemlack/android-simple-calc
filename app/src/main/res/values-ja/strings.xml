@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Both apps (Offline and Exchange) share the name. -->
+    <string name="app_name">電卓</string>
+    <string name="tab_calculator">電卓</string>
+    <string name="tab_converter">単位換算</string>
+
+    <string name="settings">設定</string>
+    <string name="settings_theme">テーマ</string>
+    <string name="settings_about">このアプリについて</string>
+    <string name="theme_system">システム</string>
+    <string name="theme_light">ライト</string>
+    <string name="theme_dark">ダーク</string>
+    <string name="close">閉じる</string>
+    <string name="about_description">依存関係と権限を最小限に抑えた、Android 向けのシンプルな電卓アプリです。MIT ライセンスの下で配布されています。</string>
+    <string name="settings_git_project">Git プロジェクト</string>
+    <string name="settings_link_failed">リンクを開けるアプリがありません。</string>
+    <string name="settings_save_failed">テーマを保存できませんでした。ストレージの空き容量を確認してください。</string>
+
+    <!-- Shared amount keypad (unit converter and currency converter): accessibility labels. -->
+    <string name="keypad_toggle_sign">符号の切り替え</string>
+    <string name="keypad_double_zero">ダブルゼロ</string>
+    <string name="keypad_decimal">小数点</string>
+    <string name="keypad_clear">クリア</string>
+    <string name="keypad_backspace">削除</string>
+
+    <!-- Shared list picker (units, currencies). -->
+    <string name="picker_search">検索</string>
+    <string name="picker_no_matches">一致する項目はありません</string>
+    <string name="picker_clear_search">検索をクリア</string>
+</resources>

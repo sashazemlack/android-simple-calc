@@ -1,5 +1,6 @@
 package com.scalc.calculator.exchange.data
 
+import com.scalc.calculator.exchange.model.LivePayloads
 import com.scalc.calculator.exchange.model.SampleRates
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -28,18 +29,24 @@ class RateParsersTest {
     // --- Frankfurter rates -------------------------------------------------------------------
 
     @Test
-    fun parsesFrankfurterRates() {
+    fun parsesFrankfurterRatesWithPerRowDates() {
         val parsed = FrankfurterParser.parseRates(SampleRates.FRANKFURTER_RATES_JSON)
-        assertEquals("2026-11-11", parsed.rateDate)
-        assertEquals(listOf("AUD", "CHF", "CZK", "EUR", "GBP", "JPY", "PLN", "USD"), parsed.rates.keys.toList())
+        assertEquals("2026-11-12", parsed.rateDate)
+        // Every well-formed (three-letter) quote; crypto and metals are filtered later, by type.
+        assertEquals(
+            listOf("ADA", "AUD", "BTC", "CHF", "CZK", "EUR", "GBP", "JPY", "PLN", "TTD", "USD", "XAU"),
+            parsed.rates.keys.toList(),
+        )
+        assertFalse(parsed.rates.containsKey("USDT"))
         assertRate("1.6222", parsed.rates["AUD"])
-        assertRate("0.9234", parsed.rates["CHF"])
         assertRate("24.378", parsed.rates["CZK"])
         assertEquals(BigDecimal.ONE, parsed.rates["EUR"])
-        assertRate("0.83618", parsed.rates["GBP"])
-        assertRate("177.18", parsed.rates["JPY"])
-        assertRate("4.4038", parsed.rates["PLN"])
         assertRate("1.1127", parsed.rates["USD"])
+        assertRate("7.5383", parsed.rates["TTD"])
+        assertEquals("2026-11-12", parsed.rateDates["USD"])
+        assertEquals("2026-11-11", parsed.rateDates["TTD"])
+        assertEquals("2026-11-12", parsed.rateDates["EUR"])
+        assertEquals(parsed.rates.keys, parsed.rateDates.keys)
     }
 
     @Test
@@ -67,23 +74,28 @@ class RateParsersTest {
     @Test
     fun toleratesAByteOrderMark() {
         val bom = Char(0xFEFF).toString()
-        assertEquals("2026-11-11", FrankfurterParser.parseRates(bom + SampleRates.FRANKFURTER_RATES_JSON).rateDate)
+        assertEquals("2026-11-12", FrankfurterParser.parseRates(bom + SampleRates.FRANKFURTER_RATES_JSON).rateDate)
         assertEquals("2026-11-11", EcbXmlParser.parse(bom + SampleRates.ECB_DAILY_XML).rateDate)
+        assertEquals("Euro", FrankfurterParser.parseCurrencies(bom + SampleRates.FRANKFURTER_CURRENCIES_JSON)["EUR"]?.name)
     }
 
     @Test
-    fun keepsOnlyTheLatestDate() {
+    fun keepsOlderRowsWithTheirOwnDateAndTheNewestRowPerQuote() {
         val json = """
             [
               {"date":"2025-12-31","base":"EUR","quote":"BGN","rate":1.9558},
+              {"date":"2026-11-10","base":"EUR","quote":"USD","rate":1.1000},
               {"date":"2026-11-11","base":"EUR","quote":"USD","rate":1.1127},
+              {"date":"2026-11-09","base":"EUR","quote":"USD","rate":1.0900},
               {"date":"2026-11-11","base":"EUR","quote":"CZK","rate":24.378}
             ]
         """.trimIndent()
         val parsed = FrankfurterParser.parseRates(json)
         assertEquals("2026-11-11", parsed.rateDate)
-        assertFalse(parsed.rates.containsKey("BGN"))
-        assertEquals(setOf("CZK", "EUR", "USD"), parsed.rates.keys)
+        assertRate("1.1127", parsed.rates["USD"])
+        assertEquals("2026-11-11", parsed.rateDates["USD"])
+        // Kept here with its date; RateTable.create drops it as stale (see RateTableTest).
+        assertEquals("2025-12-31", parsed.rateDates["BGN"])
     }
 
     @Test
@@ -112,30 +124,66 @@ class RateParsersTest {
     // --- Frankfurter currencies --------------------------------------------------------------
 
     @Test
-    fun parsesCurrencyNamesForTableCodesOnly() {
-        val codes = SampleRates.RATES.keys
-        val names = FrankfurterParser.parseCurrencyNames(SampleRates.FRANKFURTER_CURRENCIES_JSON, codes)
-        assertEquals("Czech Koruna", names["CZK"])
-        assertEquals("Euro", names["EUR"])
-        assertEquals("United States Dollar", names["USD"])
-        // Historical currency not in the rate table.
-        assertFalse(names.containsKey("BGN"))
-        // Not listed by the provider: resolved later from the platform.
-        assertFalse(names.containsKey("PLN"))
-        assertTrue(names.keys.all { it in codes })
+    fun parsesCurrencyNamesAndTypes() {
+        val currencies = FrankfurterParser.parseCurrencies(SampleRates.FRANKFURTER_CURRENCIES_JSON)
+        assertEquals(ProviderCurrency("Czech Koruna", "currency"), currencies["CZK"])
+        assertEquals(ProviderCurrency("United States Dollar", "currency"), currencies["USD"])
+        assertEquals(ProviderCurrency("Bitcoin", "crypto"), currencies["BTC"])
+        assertEquals(ProviderCurrency("Tether", "crypto"), currencies["USDT"])
+        assertEquals(ProviderCurrency("Gold (Troy Ounce)", "metal"), currencies["XAU"])
+        assertFalse(currencies.containsKey("PLN"))
     }
 
     @Test
-    fun skipsCurrencyEntriesWithoutName() {
-        val json = """[{"iso_code":"usd","name":"US Dollar"},{"iso_code":"CZK"},{"iso_code":"GBP","name":"  "},{"name":"x"}]"""
-        val names = FrankfurterParser.parseCurrencyNames(json, setOf("USD", "CZK", "GBP"))
-        assertEquals(mapOf("USD" to "US Dollar"), names)
+    fun missingOrBlankNamesAndTypesAreNull() {
+        val json = """
+            [{"iso_code":"usd","name":"US Dollar","type":"Currency"},{"iso_code":"CZK"},
+             {"iso_code":"GBP","name":"  ","type":null},{"name":"x","type":"currency"}]
+        """.trimIndent()
+        val currencies = FrankfurterParser.parseCurrencies(json)
+        assertEquals(
+            mapOf(
+                "USD" to ProviderCurrency("US Dollar", "currency"),
+                "CZK" to ProviderCurrency(null, null),
+                "GBP" to ProviderCurrency(null, null),
+            ),
+            currencies,
+        )
     }
 
     @Test
     fun malformedCurrenciesAreFormatErrors() {
-        assertFormatError { FrankfurterParser.parseCurrencyNames("", setOf("USD")) }
-        assertFormatError { FrankfurterParser.parseCurrencyNames("{}", setOf("USD")) }
+        assertFormatError { FrankfurterParser.parseCurrencies("") }
+        assertFormatError { FrankfurterParser.parseCurrencies("{}") }
+    }
+
+    // --- Saved live responses (2026-11-12) ---------------------------------------------------
+
+    @Test
+    fun parsesTheLiveBlendedFeed() {
+        val parsed = FrankfurterParser.parseRates(LivePayloads.RATES_JSON)
+        assertEquals(LivePayloads.NEWEST_DATE, parsed.rateDate)
+        // 200 rows: 189 three-letter quotes (EUR included), 11 four-letter crypto quotes dropped.
+        assertEquals(189, parsed.rates.size)
+        assertRate("1.1144", parsed.rates["USD"])
+        assertRate("2136851", parsed.rates["IRR"])
+        // Exponent notation (1.5119e-05) is read exactly.
+        assertRate("0.000015119", parsed.rates["BTC"])
+        assertEquals("2026-11-11", parsed.rateDates["TTD"])
+        assertEquals("2026-11-12", parsed.rateDates["CZK"])
+        assertEquals(setOf("2026-11-11", "2026-11-12"), parsed.rateDates.values.toSet())
+    }
+
+    @Test
+    fun parsesTheLiveCurrencyList() {
+        val currencies = FrankfurterParser.parseCurrencies(LivePayloads.CURRENCIES_JSON)
+        assertEquals(200, currencies.size)
+        assertEquals(LivePayloads.FIAT_COUNT, currencies.values.count { it.type == ProviderCurrency.TYPE_FIAT })
+        assertEquals(35, currencies.values.count { it.type == "crypto" })
+        assertEquals(setOf("XAG", "XAU", "XPD", "XPT"), currencies.filterValues { it.type == "metal" }.keys)
+        assertEquals("United States Dollar", currencies["USD"]?.name)
+        assertEquals("COMESA Dollar", currencies["CMD"]?.name)
+        assertTrue(currencies.values.all { it.name != null })
     }
 
     // --- ECB XML -----------------------------------------------------------------------------
@@ -148,6 +196,9 @@ class RateParsersTest {
         assertEquals(BigDecimal.ONE, parsed.rates["EUR"])
         assertRate("1.1127", parsed.rates["USD"])
         assertRate("177.18", parsed.rates["JPY"])
+        // One date for the whole file.
+        assertEquals(parsed.rates.keys, parsed.rateDates.keys)
+        assertEquals(setOf("2026-11-11"), parsed.rateDates.values.toSet())
     }
 
     @Test

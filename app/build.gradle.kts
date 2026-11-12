@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     // AGP 9 built-in Kotlin: do NOT apply org.jetbrains.kotlin.android.
     alias(libs.plugins.android.application)
@@ -32,8 +34,24 @@ android {
         }
     }
 
+    // Release signing comes from the git-ignored keystore.properties in the project root
+    // (storeFile, storePassword, keyAlias, keyPassword). Without it, release builds are unsigned.
+    val keystoreFile = rootProject.file("keystore.properties")
+    val releaseSigning = if (keystoreFile.isFile) {
+        val props = Properties().apply { keystoreFile.inputStream().use { load(it) } }
+        signingConfigs.create("release") {
+            storeFile = file(props.getProperty("storeFile"))
+            storePassword = props.getProperty("storePassword")
+            keyAlias = props.getProperty("keyAlias")
+            keyPassword = props.getProperty("keyPassword")
+        }
+    } else {
+        null
+    }
+
     buildTypes {
         release {
+            signingConfig = releaseSigning
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -47,6 +65,13 @@ android {
 
     buildFeatures {
         compose = true
+    }
+
+    androidResources {
+        // Lists the translated languages in a generated locale config, so Android 13+ offers
+        // them under Settings > System > Languages > App languages. The app has no language
+        // setting of its own: it always follows the system (or that per-app system setting).
+        generateLocaleConfig = true
     }
 
     testOptions {

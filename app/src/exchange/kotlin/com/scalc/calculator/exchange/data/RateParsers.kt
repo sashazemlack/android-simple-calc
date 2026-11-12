@@ -10,10 +10,26 @@ import java.math.BigInteger
 import java.util.Locale
 
 /**
- * Rates of one provider date: units per 1 EUR, always including EUR = 1 and at least one other
- * well-formed code with a positive rate.
+ * Rates as published: units per 1 EUR, always including EUR = 1 and at least one other
+ * well-formed code with a positive rate. [rateDates] holds the provider's effective date of every
+ * code in [rates]; [rateDate] is the newest of them (and the date of EUR).
  */
-data class ParsedRates(val rateDate: String, val rates: Map<String, BigDecimal>)
+data class ParsedRates(
+    val rateDate: String,
+    val rates: Map<String, BigDecimal>,
+    val rateDates: Map<String, String>,
+)
+
+/**
+ * One entry of Frankfurter's `/v2/currencies`: the English [name] and the [type] (`"currency"` for
+ * fiat money, `"crypto"`, `"metal"`); either is null when the entry does not provide it.
+ */
+data class ProviderCurrency(val name: String?, val type: String?) {
+    companion object {
+        /** [type] of fiat currencies. */
+        const val TYPE_FIAT = "currency"
+    }
+}
 
 /**
  * Parsers for the Frankfurter v2 JSON API (`/v2/rates`, `/v2/currencies`) using the platform's
@@ -22,18 +38,20 @@ data class ParsedRates(val rateDate: String, val rates: Map<String, BigDecimal>)
 object FrankfurterParser {
 
     private const val MAX_NAME_LENGTH = 100
+    private const val MAX_TYPE_LENGTH = 32
 
     /**
-     * Parses `[{"date":"2026-11-11","base":"EUR","quote":"USD","rate":1.1127}, ...]`.
+     * Parses `[{"date":"2026-11-12","base":"EUR","quote":"USD","rate":1.1127}, ...]`.
      *
-     * Rows need base EUR, a three-letter quote, a `yyyy-MM-dd` date and a positive rate. Only rows
-     * of the most recent date are kept, so a currency the provider stopped publishing can never
-     * mix an old rate into the current table.
+     * Rows need base EUR, a three-letter quote, a `yyyy-MM-dd` date and a positive rate. Every row
+     * keeps its own date (blended rates of different currencies may have different dates); if a
+     * quote occurs more than once, its most recent row wins. Rates that are too old to be used
+     * are dropped later by [RateTable.create], after crypto-assets and metals have been removed.
      */
     fun parseRates(body: String): ParsedRates {
         val array = parseArray(body)
-        var latestDate: String? = null
-        val rows = ArrayList<Triple<String, String, BigDecimal>>(array.length())
+        val rates = sortedMapOf<String, BigDecimal>()
+        val dates = HashMap<String, String>()
         for (i in 0 until array.length()) {
             val row = array.optJSONObject(i) ?: continue
             if (row.optString("base").trim() != CurrencyCodes.EUR) continue
@@ -42,32 +60,36 @@ object FrankfurterParser {
             val date = row.optString("date").trim()
             if (!RateTable.isValidRateDate(date)) continue
             val rate = decimalOrNull(row.opt("rate"))?.takeIf { it.signum() > 0 } ?: continue
-            rows += Triple(date, quote, rate)
-            if (latestDate == null || date > latestDate) latestDate = date
+            val previous = dates[quote]
+            if (previous == null || date > previous) {
+                rates[quote] = rate
+                dates[quote] = date
+            }
         }
-        if (latestDate == null) throw RatesFormatException("No valid exchange-rate rows")
-        val rates = sortedMapOf<String, BigDecimal>()
-        rows.forEach { (date, quote, rate) -> if (date == latestDate) rates[quote] = rate }
+        val latestDate = dates.values.maxOrNull() ?: throw RatesFormatException("No valid exchange-rate rows")
         rates[CurrencyCodes.EUR] = BigDecimal.ONE
-        return ParsedRates(latestDate, LinkedHashMap(rates))
+        dates[CurrencyCodes.EUR] = latestDate
+        return ParsedRates(latestDate, LinkedHashMap(rates), dates)
     }
 
     /**
-     * Parses `[{"iso_code":"CZK","name":"Czech Koruna",...}, ...]` into code -> name, keeping only
-     * [codes] (the currencies of the rate table; historical currencies are thereby dropped).
+     * Parses `[{"iso_code":"CZK","name":"Czech Koruna","type":"currency",...}, ...]` into
+     * code (upper case) -> [ProviderCurrency]. Entries without a code are skipped; blank or
+     * overlong names and types count as missing.
      */
-    fun parseCurrencyNames(body: String, codes: Set<String>): Map<String, String> {
+    fun parseCurrencies(body: String): Map<String, ProviderCurrency> {
         val array = parseArray(body)
-        val names = HashMap<String, String>()
+        val currencies = HashMap<String, ProviderCurrency>()
         for (i in 0 until array.length()) {
             val item = array.optJSONObject(i) ?: continue
             val code = item.optString("iso_code").trim().uppercase(Locale.ROOT)
-            if (code !in codes) continue
-            val raw = item.opt("name")
-            val name = (raw as? String)?.trim().orEmpty()
-            if (name.isNotEmpty() && name.length <= MAX_NAME_LENGTH) names[code] = name
+            if (code.isEmpty()) continue
+            currencies[code] = ProviderCurrency(
+                name = textOrNull(item.opt("name"), MAX_NAME_LENGTH),
+                type = textOrNull(item.opt("type"), MAX_TYPE_LENGTH)?.lowercase(Locale.ROOT),
+            )
         }
-        return names
+        return currencies
     }
 
     /** Extracts the `message` of an error body like `{"status":422,"message":"..."}`, if any. */
@@ -86,6 +108,9 @@ object FrankfurterParser {
             throw RatesFormatException("Malformed JSON array", e)
         }
     }
+
+    private fun textOrNull(value: Any?, maxLength: Int): String? =
+        (value as? String)?.trim()?.takeIf { it.isNotEmpty() && it.length <= maxLength }
 
     /** Converts an org.json number (or numeric string) without going through binary rounding errors. */
     private fun decimalOrNull(value: Any?): BigDecimal? = when (value) {
@@ -134,7 +159,7 @@ object EcbXmlParser {
         val rates = sortedMapOf<String, BigDecimal>()
         rates.putAll(byDate.getValue(latest))
         rates[CurrencyCodes.EUR] = BigDecimal.ONE
-        return ParsedRates(latest, LinkedHashMap(rates))
+        return ParsedRates(latest, LinkedHashMap(rates), rates.keys.associateWith { latest })
     }
 
     private fun parseAttributes(text: String): Map<String, String> =

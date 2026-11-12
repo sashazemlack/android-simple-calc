@@ -78,3 +78,46 @@ internal class CalculatorLayoutSpec(viewportHeight: Int, private val dims: Calcu
     /** Total content height for [fraction]; larger than the viewport only when it must scroll. */
     fun contentHeight(fraction: Float): Int = split(fraction).let { dims.actionRow + it.display + it.keypadArea }
 }
+
+/**
+ * When the calculator switches to its compact landscape layout: a phone turned sideways, where
+ * the scientific keys sit permanently beside the standard keypad instead of above it.
+ */
+internal object CalculatorLandscape {
+
+    /** Viewports (below the tab strip) at least this tall keep the portrait layout, e.g. tablets. */
+    const val MAX_HEIGHT_DP = 600f
+
+    /** Scientific key columns beside the standard keypad (3 x 5, one row per standard row). */
+    const val SCIENTIFIC_COLUMNS = 3
+
+    /** Standard keypad columns. */
+    const val STANDARD_COLUMNS = 4
+
+    fun applies(widthDp: Float, heightDp: Float): Boolean = widthDp > heightDp && heightDp < MAX_HEIGHT_DP
+}
+
+/**
+ * Vertical split of the compact landscape layout: a band with the action buttons and the display
+ * on top, the keypads (five rows) below a 1 px [separator].
+ *
+ * The keys keep `rowComfort` rows while the band can stay at least `displayMin` (and at least the
+ * action buttons' height) tall; spare height goes to the band only up to [bandMax], the rest to
+ * the keys. If even minimum sizes do not fit, both keep their minimum and the screen scrolls.
+ */
+internal class LandscapeLayoutSpec(
+    viewportHeight: Int,
+    dims: CalculatorDimensions,
+    separator: Int,
+    bandMax: Int,
+) {
+    private val keypadComfort = 5 * dims.rowComfort + 6 * dims.gap
+    private val keypadMin = 5 * dims.rowMin + 6 * dims.gap
+    private val bandMin = maxOf(dims.displayMin, dims.actionRow)
+
+    /** Height of the band holding the action buttons and the display. */
+    val band: Int = (viewportHeight - separator - keypadComfort).coerceIn(bandMin, maxOf(bandMin, bandMax))
+
+    /** Height of the keypad area (keypads or history panel). */
+    val keypad: Int = maxOf(viewportHeight - separator - band, keypadMin)
+}

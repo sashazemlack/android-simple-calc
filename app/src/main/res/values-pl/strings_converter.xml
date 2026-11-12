@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unit converter screen -->
+    <string name="conv_back">Wróć do kategorii</string>
+    <string name="conv_from">Z</string>
+    <string name="conv_to">Na</string>
+    <string name="conv_pick_from">Przelicz z</string>
+    <string name="conv_pick_to">Przelicz na</string>
+    <string name="conv_swap">Zamień</string>
+    <string name="conv_swap_description">Zamień jednostki</string>
+    <string name="conv_last_used">Ostatnio używane</string>
+    <string name="conv_below_absolute_zero">Poniżej zera absolutnego (0 K)</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Amount: 12.5 Meter" -->
+    <string name="conv_amount_description">Wartość: %1$s %2$s</string>
+    <string name="conv_result_description">Wynik: %1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">Długość</string>
+    <string name="conv_category_area">Powierzchnia</string>
+    <string name="conv_category_volume">Objętość</string>
+    <string name="conv_category_speed">Prędkość</string>
+    <string name="conv_category_mass">Waga i masa</string>
+    <string name="conv_category_temperature">Temperatura</string>
+    <string name="conv_category_power">Moc</string>
+    <string name="conv_category_pressure">Ciśnienie</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">Milimetr</string>
+    <string name="conv_unit_centimeter">Centymetr</string>
+    <string name="conv_unit_meter">Metr</string>
+    <string name="conv_unit_kilometer">Kilometr</string>
+    <string name="conv_unit_inch">Cal</string>
+    <string name="conv_unit_foot">Stopa</string>
+    <string name="conv_unit_yard">Jard</string>
+    <string name="conv_unit_mile">Mila</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">Metr kwadratowy</string>
+    <string name="conv_unit_square_kilometer">Kilometr kwadratowy</string>
+    <string name="conv_unit_hectare">Hektar</string>
+    <string name="conv_unit_acre">Akr</string>
+    <string name="conv_unit_square_foot">Stopa kwadratowa</string>
+    <string name="conv_unit_square_mile">Mila kwadratowa</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">Mililitr</string>
+    <string name="conv_unit_liter">Litr</string>
+    <string name="conv_unit_cubic_meter">Metr sześcienny</string>
+    <string name="conv_unit_us_gallon">Galon (USA)</string>
+    <string name="conv_unit_us_quart">Kwarta (USA)</string>
+    <string name="conv_unit_us_fluid_ounce">Uncja płynu (USA)</string>
+    <string name="conv_unit_us_cup">Filiżanka (USA)</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">Metr na sekundę</string>
+    <string name="conv_unit_kilometer_per_hour">Kilometr na godzinę</string>
+    <string name="conv_unit_mile_per_hour">Mila na godzinę</string>
+    <string name="conv_unit_foot_per_second">Stopa na sekundę</string>
+    <string name="conv_unit_knot">Węzeł</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">Miligram</string>
+    <string name="conv_unit_gram">Gram</string>
+    <string name="conv_unit_kilogram">Kilogram</string>
+    <string name="conv_unit_tonne">Tona</string>
+    <string name="conv_unit_ounce">Uncja</string>
+    <string name="conv_unit_pound">Funt</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">Stopień Celsjusza</string>
+    <string name="conv_unit_fahrenheit">Stopień Fahrenheita</string>
+    <string name="conv_unit_kelvin">Kelwin</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">Wat</string>
+    <string name="conv_unit_kilowatt">Kilowat</string>
+    <string name="conv_unit_megawatt">Megawat</string>
+    <string name="conv_unit_metric_horsepower">Metryczny koń mechaniczny</string>
+    <string name="conv_unit_mechanical_horsepower">Brytyjski koń mechaniczny</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">Paskal</string>
+    <string name="conv_unit_kilopascal">Kilopaskal</string>
+    <string name="conv_unit_bar">Bar</string>
+    <string name="conv_unit_atmosphere">Atmosfera</string>
+    <string name="conv_unit_psi">Funt na cal kwadratowy</string>
+    <string name="conv_unit_mmhg">Milimetr słupa rtęci</string>
+</resources>

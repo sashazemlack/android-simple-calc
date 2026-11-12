@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">表达式：%1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">结果：%1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">历史记录</string>
+    <string name="calc_paste">粘贴</string>
+    <string name="calc_copy">复制</string>
+    <string name="calc_copied">已复制</string>
+    <string name="calc_nothing_to_copy">没有可复制的内容</string>
+    <string name="calc_pasted">已粘贴</string>
+    <string name="calc_clipboard_empty">剪贴板为空</string>
+    <string name="calc_clipboard_invalid">剪贴板中没有有效的表达式</string>
+    <string name="calc_clipboard_too_long">表达式过长，无法粘贴</string>
+    <string name="calc_clipboard_unavailable">剪贴板不可用</string>
+    <string name="calc_clip_label">计算结果</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">表达式不完整</string>
+    <string name="calc_error_syntax">表达式无效</string>
+    <string name="calc_error_division_by_zero">不能除以 0</string>
+    <string name="calc_error_domain">此函数的输入值无效</string>
+    <string name="calc_error_invalid_factorial">阶乘只能用于 ≥ 0 的整数</string>
+    <string name="calc_error_overflow">结果过大</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">科学计算功能</string>
+    <string name="calc_state_expanded">已展开</string>
+    <string name="calc_state_collapsed">已收起</string>
+    <string name="calc_state_on">开启</string>
+    <string name="calc_state_off">关闭</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">清除</string>
+    <string name="calc_key_percent">百分比</string>
+    <string name="calc_key_backspace">退格</string>
+    <string name="calc_key_divide">除以</string>
+    <string name="calc_key_multiply">乘以</string>
+    <string name="calc_key_minus">减</string>
+    <string name="calc_key_plus">加</string>
+    <string name="calc_key_toggle_sign">切换正负号</string>
+    <string name="calc_key_decimal">小数点</string>
+    <string name="calc_key_equals">等于</string>
+    <string name="calc_key_sin">正弦</string>
+    <string name="calc_key_cos">余弦</string>
+    <string name="calc_key_tan">正切</string>
+    <string name="calc_key_asin">反正弦</string>
+    <string name="calc_key_acos">反余弦</string>
+    <string name="calc_key_atan">反正切</string>
+    <string name="calc_key_log">常用对数</string>
+    <string name="calc_key_ln">自然对数</string>
+    <string name="calc_key_pow10">10 的乘方</string>
+    <string name="calc_key_exp">e 的乘方</string>
+    <string name="calc_key_open_parenthesis">左括号</string>
+    <string name="calc_key_close_parenthesis">右括号</string>
+    <string name="calc_key_power">乘方</string>
+    <string name="calc_key_sqrt">平方根</string>
+    <string name="calc_key_factorial">阶乘</string>
+    <string name="calc_key_pi">圆周率</string>
+    <string name="calc_key_euler">自然常数</string>
+    <string name="calc_key_inverse">反函数</string>
+    <string name="calc_angle_degrees">角度</string>
+    <string name="calc_angle_radians">弧度</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">历史记录</string>
+    <plurals name="calc_history_count">
+        <item quantity="other">%d 次计算</item>
+    </plurals>
+    <string name="calc_history_clear">清除</string>
+    <string name="calc_history_clear_description">清除历史记录</string>
+    <string name="calc_history_back">返回键盘</string>
+    <string name="calc_history_empty">暂无计算记录。\n按 = 后，结果会显示在这里。</string>
+    <string name="calc_history_cleared">历史记录已清除</string>
+    <string name="calc_history_restore">使用此计算</string>
+    <string name="calc_history_storage_failed">无法保存历史记录</string>
+</resources>

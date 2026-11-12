@@ -33,8 +33,9 @@ import com.scalc.calculator.ui.components.FillOrScrollColumn
 import com.scalc.calculator.ui.components.LocalFeedback
 import com.scalc.calculator.ui.components.NumericKeypad
 import com.scalc.calculator.ui.components.PickerDialog
-import com.scalc.calculator.ui.components.PickerItem
 import com.scalc.calculator.ui.components.VerticalSeparator
+import java.util.Locale
+import java.util.TimeZone
 
 /** Height of one keypad row when the regular layout has to be compressed (large fonts). */
 private val MinKeyRowHeight = 52.dp
@@ -53,7 +54,7 @@ private enum class CurrencySide { From, To }
 
 /**
  * Exchange Rate tab (Exchange flavor only): converts the typed amount locally with the cached
- * ECB reference rates, shows the rate status directly above the keypad and supports a custom
+ * rates, shows the rate status directly above the keypad and supports a custom
  * pull-down-to-refresh gesture anywhere on the screen while it is scrolled to the top.
  *
  * The arrangement adapts to the available size ([ExchangeLayout]): stacked fields on tall
@@ -61,11 +62,18 @@ private enum class CurrencySide { From, To }
  * block and keypad in landscape, so the amounts and the whole keypad stay visible together.
  *
  * State lives in the activity-scoped [ExchangeViewModel], so the amount survives tab switches.
+ * Its state holds no text; names, status texts and dates are localized here with the current
+ * configuration, so they always follow the system language.
  */
 @Composable
 fun ExchangeScreen(modifier: Modifier = Modifier) {
     val viewModel: ExchangeViewModel = viewModel(factory = ExchangeViewModel.Factory)
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val localization = rememberExchangeLocalization()
+    val timeZone = TimeZone.getDefault()
+    val texts = remember(state.from, state.to, state.status, state.pairRateDate, localization, timeZone.id) {
+        state.localize(localization, timeZone)
+    }
     // Scrolls the whole screen (stacked layouts) or the fields pane (side-by-side layout).
     val scrollState = rememberScrollState()
     // Scrolls the status block and keypad pane of the side-by-side layout only.
@@ -96,6 +104,7 @@ fun ExchangeScreen(modifier: Modifier = Modifier) {
         val fields: @Composable (compact: Boolean) -> Unit = { compact ->
             ExchangeFields(
                 state = state,
+                texts = texts,
                 onPickFrom = { pickerSide = CurrencySide.From },
                 onPickTo = { pickerSide = CurrencySide.To },
                 onSwap = viewModel::swap,
@@ -103,7 +112,7 @@ fun ExchangeScreen(modifier: Modifier = Modifier) {
             )
         }
         val status: @Composable () -> Unit = {
-            RateStatusBlock(status = state.status, onRefresh = viewModel::refresh)
+            RateStatusBlock(status = texts.status, onRefresh = viewModel::refresh)
         }
         val keypad: @Composable () -> Unit = {
             NumericKeypad(onKey = viewModel::onKey, bottomLeftKey = NumericKey.DoubleZero)
@@ -159,6 +168,7 @@ fun ExchangeScreen(modifier: Modifier = Modifier) {
         CurrencyPicker(
             title = stringResource(if (side == CurrencySide.From) R.string.exch_pick_from else R.string.exch_pick_to),
             state = state,
+            locale = localization.locale,
             selectedCode = if (side == CurrencySide.From) state.from.code else state.to.code,
             onSelect = { code ->
                 if (side == CurrencySide.From) viewModel.selectFrom(code) else viewModel.selectTo(code)
@@ -189,18 +199,20 @@ private fun RefreshOutcomeFeedback(viewModel: ExchangeViewModel, pullState: Pull
     }
 }
 
-/** Searchable currency list: code as title, name as subtitle, common currencies first. */
+/**
+ * Searchable currency list: code as title, name in the current language as subtitle (the English
+ * name is searchable too), common currencies first.
+ */
 @Composable
 private fun CurrencyPicker(
     title: String,
     state: ExchangeUiState,
+    locale: Locale,
     selectedCode: String,
     onSelect: (String) -> Unit,
     onDismiss: () -> Unit,
 ) {
-    val items = remember(state.currencies) {
-        state.currencies.map { PickerItem(key = it.code, title = it.code, subtitle = it.name) }
-    }
+    val items = remember(state.currencies, locale) { currencyPickerItems(state.currencies, locale) }
     PickerDialog(
         title = title,
         items = items,

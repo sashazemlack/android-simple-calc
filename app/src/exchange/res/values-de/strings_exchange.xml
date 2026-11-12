@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">Von</string>
+    <string name="exch_to">Nach</string>
+    <string name="exch_swap">Tauschen</string>
+    <string name="exch_swap_description">Währungen tauschen</string>
+    <string name="exch_pick_from">Umrechnen von</string>
+    <string name="exch_pick_to">Umrechnen in</string>
+    <string name="exch_search_placeholder">Währung oder Code suchen</string>
+    <string name="exch_search_empty">Keine passenden Währungen</string>
+    <!-- %1$s = formatted amount, %2$s = currency name, e.g. "Betrag: 12,5 Euro" -->
+    <string name="exch_amount_description">Betrag: %1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name -->
+    <string name="exch_result_description">Umgerechneter Betrag: %1$s %2$s</string>
+    <string name="exch_result_unavailable">Umgerechneter Betrag nicht verfügbar</string>
+    <!-- %1$s = data source -->
+    <string name="exch_attribution">%1$s · Kreuzkurse auf dem Gerät berechnet</string>
+    <!-- Compact layout: both unit rates on one line -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- %1$s = rate line, e.g. "1 EUR = 1,9949 ANG", %2$s = date of that rate -->
+    <string name="exch_rate_dated">%1$s (Stand: %2$s)</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">Wechselkurse werden aktualisiert</string>
+    <string name="exch_refresh_action">Wechselkurse aktualisieren</string>
+    <string name="exch_feedback_updated">Wechselkurse aktualisiert</string>
+    <string name="exch_feedback_failed">Wechselkurse konnten nicht aktualisiert werden</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">Wechselkurse werden geladen…</string>
+    <string name="exch_status_refreshing">Wechselkurse werden aktualisiert…</string>
+    <string name="exch_status_fresh">Kurse zuletzt aktualisiert: %1$s</string>
+    <string name="exch_status_cached">Gespeicherte Kurse · Zuletzt aktualisiert: %1$s</string>
+    <string name="exch_status_stale">Gespeicherte Kurse (möglicherweise veraltet) · Zuletzt aktualisiert: %1$s</string>
+    <string name="exch_status_unavailable">Wechselkurse nicht verfügbar. Zum Wiederholen nach unten wischen.</string>
+    <string name="exch_status_last_updated">Zuletzt aktualisiert: %1$s</string>
+    <!-- %1$s = newest date of the downloaded rates -->
+    <string name="exch_status_rate_date">Wechselkurse vom %1$s</string>
+    <!-- Same for rates published by the European Central Bank (fallback source) -->
+    <string name="exch_status_rate_date_ecb">EZB-Referenzkurse vom %1$s</string>
+    <string name="exch_status_update_failed">Aktualisierung fehlgeschlagen. Zum Wiederholen nach unten wischen.</string>
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">Keine Internetverbindung.</string>
+    <string name="exch_error_server">Der Wechselkursdienst ist derzeit nicht verfügbar.</string>
+    <string name="exch_error_invalid_data">Der Wechselkursdienst hat ungültige Daten geliefert.</string>
+    <!-- Data sources (shown before the attribution suffix). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">Quelle: Kurse von Zentralbanken und weiteren offiziellen Stellen, zusammengeführt von frankfurter.dev</string>
+    <string name="exch_source_frankfurter">Quelle: Europäische Zentralbank über frankfurter.dev</string>
+    <string name="exch_source_ecb">Quelle: Europäische Zentralbank</string>
+</resources>

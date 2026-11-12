@@ -62,6 +62,32 @@ internal fun ActionRow(
 }
 
 /**
+ * The same three commands without the surrounding rules, side by side at full height: used in
+ * the compact landscape layout, where they share one band with the display.
+ */
+@Composable
+internal fun ActionButtons(
+    historyOpen: Boolean,
+    onToggleHistory: () -> Unit,
+    onPaste: () -> Unit,
+    onCopy: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(modifier.fillMaxHeight(), verticalAlignment = Alignment.CenterVertically) {
+        ActionButton(
+            glyph = Glyph.History,
+            label = stringResource(R.string.calc_history),
+            onClick = onToggleHistory,
+            selected = historyOpen,
+        )
+        VerticalSeparator()
+        ActionButton(glyph = Glyph.Paste, description = stringResource(R.string.calc_paste), onClick = onPaste)
+        VerticalSeparator()
+        ActionButton(glyph = Glyph.Copy, description = stringResource(R.string.calc_copy), onClick = onCopy)
+    }
+}
+
+/**
  * One command: a glyph with an optional visible [label] (otherwise [description] names it for
  * accessibility). [selected] non-null makes it a toggle that shows a 2 dp accent underline.
  */

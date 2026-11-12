@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">Ausdruck: %1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">Ergebnis: %1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">Verlauf</string>
+    <string name="calc_paste">Einfügen</string>
+    <string name="calc_copy">Kopieren</string>
+    <string name="calc_copied">Kopiert</string>
+    <string name="calc_nothing_to_copy">Nichts zu kopieren</string>
+    <string name="calc_pasted">Eingefügt</string>
+    <string name="calc_clipboard_empty">Zwischenablage ist leer</string>
+    <string name="calc_clipboard_invalid">Zwischenablage enthält keinen gültigen Ausdruck</string>
+    <string name="calc_clipboard_too_long">Ausdruck ist zu lang zum Einfügen</string>
+    <string name="calc_clipboard_unavailable">Zwischenablage ist nicht verfügbar</string>
+    <string name="calc_clip_label">Rechenergebnis</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">Unvollständiger Ausdruck</string>
+    <string name="calc_error_syntax">Ungültiger Ausdruck</string>
+    <string name="calc_error_division_by_zero">Division durch null nicht möglich</string>
+    <string name="calc_error_domain">Ungültige Eingabe für diese Funktion</string>
+    <string name="calc_error_invalid_factorial">Fakultät erfordert eine ganze Zahl ≥ 0</string>
+    <string name="calc_error_overflow">Ergebnis ist zu groß</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">Wissenschaftliche Funktionen</string>
+    <string name="calc_state_expanded">Ausgeklappt</string>
+    <string name="calc_state_collapsed">Eingeklappt</string>
+    <string name="calc_state_on">An</string>
+    <string name="calc_state_off">Aus</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">Löschen</string>
+    <string name="calc_key_percent">Prozent</string>
+    <string name="calc_key_backspace">Rücktaste</string>
+    <string name="calc_key_divide">Geteilt durch</string>
+    <string name="calc_key_multiply">Mal</string>
+    <string name="calc_key_minus">Minus</string>
+    <string name="calc_key_plus">Plus</string>
+    <string name="calc_key_toggle_sign">Vorzeichen wechseln</string>
+    <string name="calc_key_decimal">Dezimaltrennzeichen</string>
+    <string name="calc_key_equals">Gleich</string>
+    <string name="calc_key_sin">Sinus</string>
+    <string name="calc_key_cos">Kosinus</string>
+    <string name="calc_key_tan">Tangens</string>
+    <string name="calc_key_asin">Arkussinus</string>
+    <string name="calc_key_acos">Arkuskosinus</string>
+    <string name="calc_key_atan">Arkustangens</string>
+    <string name="calc_key_log">Dekadischer Logarithmus</string>
+    <string name="calc_key_ln">Natürlicher Logarithmus</string>
+    <string name="calc_key_pow10">Zehn hoch</string>
+    <string name="calc_key_exp">e hoch</string>
+    <string name="calc_key_open_parenthesis">Klammer auf</string>
+    <string name="calc_key_close_parenthesis">Klammer zu</string>
+    <string name="calc_key_power">Potenz</string>
+    <string name="calc_key_sqrt">Quadratwurzel</string>
+    <string name="calc_key_factorial">Fakultät</string>
+    <string name="calc_key_pi">Pi</string>
+    <string name="calc_key_euler">Eulersche Zahl</string>
+    <string name="calc_key_inverse">Umkehrfunktionen</string>
+    <string name="calc_angle_degrees">Grad</string>
+    <string name="calc_angle_radians">Bogenmaß</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">Verlauf</string>
+    <plurals name="calc_history_count">
+        <item quantity="one">%d Berechnung</item>
+        <item quantity="other">%d Berechnungen</item>
+    </plurals>
+    <string name="calc_history_clear">Löschen</string>
+    <string name="calc_history_clear_description">Verlauf löschen</string>
+    <string name="calc_history_back">Zurück zum Tastenfeld</string>
+    <string name="calc_history_empty">Noch keine Berechnungen.\nErgebnisse werden hier angezeigt, sobald = gedrückt wird.</string>
+    <string name="calc_history_cleared">Verlauf gelöscht</string>
+    <string name="calc_history_restore">Diese Berechnung verwenden</string>
+    <string name="calc_history_storage_failed">Verlauf konnte nicht gespeichert werden</string>
+</resources>

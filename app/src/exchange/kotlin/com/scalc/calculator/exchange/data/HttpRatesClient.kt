@@ -1,20 +1,23 @@
 package com.scalc.calculator.exchange.data
 
+import com.scalc.calculator.exchange.model.CurrencyCodes
+import com.scalc.calculator.exchange.model.CurrencyNames
 import com.scalc.calculator.exchange.model.RateSourceKind
 import com.scalc.calculator.exchange.model.RateTable
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.net.HttpURLConnection
-import java.util.Locale
 import kotlin.coroutines.cancellation.CancellationException
 import java.util.Currency as JavaCurrency
 
 /**
- * Downloads the European Central Bank euro reference rates.
+ * Downloads euro-based exchange rates of fiat currencies.
  *
- * 1. Primary: Frankfurter v2 restricted to the ECB provider ([RATES_URL]); supports conditional
- *    requests (`If-None-Match` -> 304). Currency names come from [CURRENCIES_URL].
+ * 1. Primary: Frankfurter v2's default feed ([RATES_URL]), rates blended across its daily
+ *    providers (mostly central banks), each currency with its own effective date. Supports
+ *    conditional requests (`If-None-Match` -> 304). Currency names and types come from
+ *    [CURRENCIES_URL]; crypto-assets and precious metals are dropped ([FiatCurrencies]).
  * 2. Fallback, when the primary fails for any reason: the ECB's own daily XML ([ECB_DAILY_URL]).
  *
  * Requests contain no user data (only fixed URLs, `Accept` and a generic `User-Agent`). Work runs
@@ -56,25 +59,31 @@ class HttpRatesClient(
         }
         ensureSuccess(response)
         val parsed = FrankfurterParser.parseRates(response.body)
-        val providerNames = fetchProviderNames(parsed.rates.keys)
+        val catalog = fetchCurrencies()
+        val fiat = FiatCurrencies.select(parsed.rates.keys, catalog)
+        val rates = parsed.rates.filterKeys { it in fiat }
+        val providerNames = catalog.orEmpty().mapNotNull { (code, entry) -> entry.name?.let { code to it } }.toMap()
         val table = RateTable.create(
-            rates = parsed.rates,
-            rateDate = parsed.rateDate,
-            names = CurrencyNames.resolve(parsed.rates.keys, providerNames),
-            source = RateSourceKind.FRANKFURTER_ECB,
+            rates = rates,
+            rateDates = parsed.rateDates,
+            names = CurrencyNames.englishNames(rates.keys, providerNames),
+            source = RateSourceKind.FRANKFURTER_BLENDED,
         ) ?: throw RatesFormatException("Unusable Frankfurter rate table")
         val newEtag = response.etag?.trim()?.takeIf { it.isNotEmpty() && it.length <= MAX_ETAG_LENGTH }
         return FetchResult.Downloaded(table, newEtag)
     }
 
-    /** Names are optional: any failure falls back to platform names in [CurrencyNames.resolve]. */
-    private fun fetchProviderNames(codes: Set<String>): Map<String, String> = try {
+    /**
+     * Names and types of the provider's currencies, or null if they cannot be downloaded or read.
+     * They are optional: [FiatCurrencies] and [CurrencyNames] then fall back to the platform.
+     */
+    private fun fetchCurrencies(): Map<String, ProviderCurrency>? = try {
         val response = transport.get(CURRENCIES_URL, mapOf("Accept" to JSON_ACCEPT, "User-Agent" to USER_AGENT))
-        if (response.statusCode in 200..299) FrankfurterParser.parseCurrencyNames(response.body, codes) else emptyMap()
+        if (response.statusCode in 200..299) FrankfurterParser.parseCurrencies(response.body) else null
     } catch (e: CancellationException) {
         throw e
     } catch (e: Exception) {
-        emptyMap()
+        null
     }
 
     private fun fetchFromEcb(): RateTable {
@@ -83,8 +92,8 @@ class HttpRatesClient(
         val parsed = EcbXmlParser.parse(response.body)
         return RateTable.create(
             rates = parsed.rates,
-            rateDate = parsed.rateDate,
-            names = CurrencyNames.resolve(parsed.rates.keys, emptyMap()),
+            rateDates = parsed.rateDates,
+            names = CurrencyNames.englishNames(parsed.rates.keys, emptyMap()),
             source = RateSourceKind.ECB_DIRECT,
         ) ?: throw RatesFormatException("Unusable ECB rate table")
     }
@@ -96,8 +105,9 @@ class HttpRatesClient(
     }
 
     companion object {
-        const val RATES_URL = "https://api.frankfurter.dev/v2/rates?providers=ECB"
-        const val CURRENCIES_URL = "https://api.frankfurter.dev/v2/currencies?providers=ECB"
+        /** Frankfurter's default feed: rates blended across all daily providers. */
+        const val RATES_URL = "https://api.frankfurter.dev/v2/rates"
+        const val CURRENCIES_URL = "https://api.frankfurter.dev/v2/currencies"
         const val ECB_DAILY_URL = "https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml"
 
         /** Generic client identification; deliberately contains no device or user information. */
@@ -108,16 +118,34 @@ class HttpRatesClient(
     }
 }
 
-/** English display names for currency codes. */
-object CurrencyNames {
+/**
+ * Decides which quoted codes are fiat currencies; crypto-assets (e.g. ADA, BTC) and precious
+ * metals (e.g. XAU) are not offered.
+ */
+object FiatCurrencies {
 
-    /** Name for every code in [codes]: the provider's name, else the platform's, else the code itself. */
-    fun resolve(codes: Collection<String>, providerNames: Map<String, String>): Map<String, String> =
-        codes.associateWith { code -> providerNames[code]?.takeIf { it.isNotBlank() } ?: platformName(code) ?: code }
+    /** ISO 4217 codes known to `java.util.Currency` that are not money: precious metals, test, none. */
+    private val NON_FIAT_ISO_CODES = setOf("XAG", "XAU", "XPD", "XPT", "XTS", "XXX")
 
-    /** `java.util.Currency` English display name, or null if the platform does not know [code]. */
-    fun platformName(code: String): String? =
-        runCatching { JavaCurrency.getInstance(code).getDisplayName(Locale.ENGLISH) }
-            .getOrNull()
-            ?.takeIf { it.isNotBlank() && it != code }
+    private val platformCodes: Set<String> by lazy {
+        runCatching { JavaCurrency.getAvailableCurrencies().mapTo(HashSet()) { it.currencyCode } }.getOrDefault(emptySet())
+    }
+
+    /**
+     * The fiat codes among [codes] (EUR always counts). With the provider's [catalog], a code is
+     * fiat when its type is `"currency"`; a code the catalog does not describe, or every code when
+     * the catalog is unavailable (null), is fiat when [isPlatformFiat].
+     */
+    fun select(codes: Collection<String>, catalog: Map<String, ProviderCurrency>?): Set<String> =
+        codes.filterTo(sortedSetOf()) { code ->
+            val type = catalog?.get(code)?.type
+            when {
+                code == CurrencyCodes.EUR -> true
+                type != null -> type == ProviderCurrency.TYPE_FIAT
+                else -> isPlatformFiat(code)
+            }
+        }
+
+    /** True when the platform's `java.util.Currency` knows [code] and it is not a metal or technical code. */
+    fun isPlatformFiat(code: String): Boolean = code !in NON_FIAT_ISO_CODES && code in platformCodes
 }

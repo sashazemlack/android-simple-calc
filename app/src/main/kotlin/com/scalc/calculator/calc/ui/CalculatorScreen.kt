@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.focusable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -40,6 +41,8 @@ private const val PANEL_FADE_MILLIS = 180
 /**
  * Calculator tab (both flavors): display with live result, History / Paste / Copy row, the
  * expandable scientific keypad and the standard keypad, or the history panel in their place.
+ * On a phone turned sideways ([CalculatorLandscape]) the scientific keys stay visible beside the
+ * standard keypad and the action buttons share the display band.
  * State lives in the activity-scoped [CalculatorViewModel], so it survives tab switches.
  *
  * The calculator is always laid out left to right, like any calculator: in RTL locales the
@@ -87,70 +90,101 @@ fun CalculatorScreen(modifier: Modifier = Modifier) {
     LaunchedEffect(panel, state.scientificExpanded) { panel.animateTo(state.scientificExpanded) }
 
     val errorMessage = state.previewError?.let { texts.errors.getValue(it) }
+    val dimensions = rememberCalculatorDimensions()
+    val display: @Composable () -> Unit = {
+        // The display is the keyboard focus target, so hardware keys work without touching a key
+        // first; it also reads as one element (expression + result) to TalkBack. Right after '='
+        // it is a polite live region, so the result replacing the expression is announced; while
+        // typing it is not, so keystroke previews stay silent.
+        val focusRequester = remember { FocusRequester() }
+        val announceResult = state.justEvaluated
+        CalculatorDisplay(
+            expression = state.expression,
+            preview = state.preview,
+            errorMessage = errorMessage,
+            angleMode = state.angleMode,
+            inverse = state.inverse,
+            modifier = Modifier
+                .focusRequester(focusRequester)
+                .focusable()
+                .semantics(mergeDescendants = true) {
+                    if (announceResult) liveRegion = LiveRegionMode.Polite
+                },
+        )
+        LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
+    }
+    // The history panel replaces whichever keypads the current layout shows.
+    val keypadArea: @Composable (keypads: @Composable () -> Unit) -> Unit = { keypads ->
+        Crossfade(
+            targetState = state.historyOpen,
+            modifier = Modifier.fillMaxSize(),
+            animationSpec = tween(PANEL_FADE_MILLIS),
+            label = "calculatorKeypadArea",
+        ) { historyOpen ->
+            if (historyOpen) {
+                HistoryPanel(
+                    entries = state.history,
+                    onRestore = viewModel::restoreHistoryEntry,
+                    onClear = onClearHistory,
+                    onClose = viewModel::closeHistory,
+                )
+            } else {
+                keypads()
+            }
+        }
+    }
+
     CompositionLocalProvider(LocalLayoutDirection provides LayoutDirection.Ltr) {
-        CalculatorLayout(
-            dimensions = rememberCalculatorDimensions(),
-            scientificFraction = { panel.fraction },
-            display = {
-                // The display is the keyboard focus target, so hardware keys work without touching
-                // a key first; it also reads as one element (expression + result) to TalkBack. Right
-                // after '=' it is a polite live region, so the result replacing the expression is
-                // announced; while typing it is not, so keystroke previews stay silent.
-                val focusRequester = remember { FocusRequester() }
-                val announceResult = state.justEvaluated
-                CalculatorDisplay(
-                    expression = state.expression,
-                    preview = state.preview,
-                    errorMessage = errorMessage,
-                    angleMode = state.angleMode,
-                    inverse = state.inverse,
-                    modifier = Modifier
-                        .focusRequester(focusRequester)
-                        .focusable()
-                        .semantics(mergeDescendants = true) {
-                            if (announceResult) liveRegion = LiveRegionMode.Polite
-                        },
-                )
-                LaunchedEffect(focusRequester) { focusRequester.requestFocus() }
-            },
-            actionRow = {
-                ActionRow(
-                    historyOpen = state.historyOpen,
-                    onToggleHistory = viewModel::toggleHistory,
-                    onPaste = onPaste,
-                    onCopy = onCopy,
-                )
-            },
-            keypadArea = { spec ->
-                Crossfade(
-                    targetState = state.historyOpen,
-                    modifier = Modifier.fillMaxSize(),
-                    animationSpec = tween(PANEL_FADE_MILLIS),
-                    label = "calculatorKeypadArea",
-                ) { historyOpen ->
-                    if (historyOpen) {
-                        HistoryPanel(
-                            entries = state.history,
-                            onRestore = viewModel::restoreHistoryEntry,
-                            onClear = onClearHistory,
-                            onClose = viewModel::closeHistory,
-                        )
-                    } else {
-                        Keypads(
-                            state = state,
-                            panel = panel,
-                            scientificFullPx = spec.scientificFull,
-                            onKey = onKey,
-                            onToggleScientific = viewModel::toggleScientific,
-                            onScientificSettled = viewModel::setScientificExpanded,
-                        )
-                    }
-                }
-            },
-            modifier = modifier
+        BoxWithConstraints(
+            modifier
                 .fillMaxSize()
                 .onKeyEvent { event -> HardwareKeys.handle(event, onKey, onCopy, onPaste) },
-        )
+        ) {
+            if (CalculatorLandscape.applies(maxWidth.value, maxHeight.value)) {
+                // Phone turned sideways: scientific keys always visible beside the standard keypad.
+                LandscapeCalculatorLayout(
+                    dimensions = dimensions,
+                    display = display,
+                    actions = {
+                        ActionButtons(
+                            historyOpen = state.historyOpen,
+                            onToggleHistory = viewModel::toggleHistory,
+                            onPaste = onPaste,
+                            onCopy = onCopy,
+                        )
+                    },
+                    keypadArea = { keypadArea { LandscapeKeypads(state, onKey) } },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            } else {
+                CalculatorLayout(
+                    dimensions = dimensions,
+                    scientificFraction = { panel.fraction },
+                    display = display,
+                    actionRow = {
+                        ActionRow(
+                            historyOpen = state.historyOpen,
+                            onToggleHistory = viewModel::toggleHistory,
+                            onPaste = onPaste,
+                            onCopy = onCopy,
+                        )
+                    },
+                    keypadArea = { spec ->
+                        keypadArea {
+                            Keypads(
+                                state = state,
+                                panel = panel,
+                                scientificFullPx = spec.scientificFull,
+                                onKey = onKey,
+                                onToggleScientific = viewModel::toggleScientific,
+                                onScientificSettled = viewModel::setScientificExpanded,
+                            )
+                        }
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+            }
+        }
     }
 }
 

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Both apps (Offline and Exchange) share the name. -->
+    <string name="app_name">Kalkulator</string>
+    <string name="tab_calculator">Kalkulator</string>
+    <string name="tab_converter">Konwerter</string>
+
+    <string name="settings">Ustawienia</string>
+    <string name="settings_theme">Motyw</string>
+    <string name="settings_about">O aplikacji</string>
+    <string name="theme_system">Systemowy</string>
+    <string name="theme_light">Jasny</string>
+    <string name="theme_dark">Ciemny</string>
+    <string name="close">Zamknij</string>
+    <string name="about_description">Prosty kalkulator na Androida z minimalną liczbą zależności i uprawnień, udostępniany na licencji MIT</string>
+    <string name="settings_git_project">Projekt Git</string>
+    <string name="settings_link_failed">Żadna aplikacja nie może otworzyć linku.</string>
+    <string name="settings_save_failed">Nie udało się zapisać motywu. Sprawdź, czy pamięć nie jest pełna.</string>
+
+    <!-- Shared amount keypad (unit converter and currency converter): accessibility labels. -->
+    <string name="keypad_toggle_sign">Zmień znak</string>
+    <string name="keypad_double_zero">Dwa zera</string>
+    <string name="keypad_decimal">Separator dziesiętny</string>
+    <string name="keypad_clear">Wyczyść</string>
+    <string name="keypad_backspace">Usuń znak</string>
+
+    <!-- Shared list picker (units, currencies). -->
+    <string name="picker_search">Szukaj</string>
+    <string name="picker_no_matches">Brak wyników</string>
+    <string name="picker_clear_search">Wyczyść wyszukiwanie</string>
+</resources>

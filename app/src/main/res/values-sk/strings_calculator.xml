@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">Výraz: %1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">Výsledok: %1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">História</string>
+    <string name="calc_paste">Vložiť</string>
+    <string name="calc_copy">Kopírovať</string>
+    <string name="calc_copied">Skopírované</string>
+    <string name="calc_nothing_to_copy">Nie je čo kopírovať</string>
+    <string name="calc_pasted">Vložené</string>
+    <string name="calc_clipboard_empty">Schránka je prázdna</string>
+    <string name="calc_clipboard_invalid">Schránka neobsahuje platný výraz</string>
+    <string name="calc_clipboard_too_long">Výraz je príliš dlhý na vloženie</string>
+    <string name="calc_clipboard_unavailable">Schránka nie je dostupná</string>
+    <string name="calc_clip_label">Výsledok výpočtu</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">Neúplný výraz</string>
+    <string name="calc_error_syntax">Neplatný výraz</string>
+    <string name="calc_error_division_by_zero">Nulou nemožno deliť</string>
+    <string name="calc_error_domain">Neplatný vstup pre túto funkciu</string>
+    <string name="calc_error_invalid_factorial">Faktoriál vyžaduje celé číslo ≥ 0</string>
+    <string name="calc_error_overflow">Výsledok je príliš veľký</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">Vedecké funkcie</string>
+    <string name="calc_state_expanded">Rozbalené</string>
+    <string name="calc_state_collapsed">Zbalené</string>
+    <string name="calc_state_on">Zapnuté</string>
+    <string name="calc_state_off">Vypnuté</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">Vymazať</string>
+    <string name="calc_key_percent">Percento</string>
+    <string name="calc_key_backspace">Zmazať znak</string>
+    <string name="calc_key_divide">Delené</string>
+    <string name="calc_key_multiply">Krát</string>
+    <string name="calc_key_minus">Mínus</string>
+    <string name="calc_key_plus">Plus</string>
+    <string name="calc_key_toggle_sign">Zmeniť znamienko</string>
+    <string name="calc_key_decimal">Desatinný oddeľovač</string>
+    <string name="calc_key_equals">Rovná sa</string>
+    <string name="calc_key_sin">Sínus</string>
+    <string name="calc_key_cos">Kosínus</string>
+    <string name="calc_key_tan">Tangens</string>
+    <string name="calc_key_asin">Arkus sínus</string>
+    <string name="calc_key_acos">Arkus kosínus</string>
+    <string name="calc_key_atan">Arkus tangens</string>
+    <string name="calc_key_log">Dekadický logaritmus</string>
+    <string name="calc_key_ln">Prirodzený logaritmus</string>
+    <string name="calc_key_pow10">Desať na x-tú</string>
+    <string name="calc_key_exp">e na x-tú</string>
+    <string name="calc_key_open_parenthesis">Ľavá zátvorka</string>
+    <string name="calc_key_close_parenthesis">Pravá zátvorka</string>
+    <string name="calc_key_power">Mocnina</string>
+    <string name="calc_key_sqrt">Druhá odmocnina</string>
+    <string name="calc_key_factorial">Faktoriál</string>
+    <string name="calc_key_pi">Pí</string>
+    <string name="calc_key_euler">Eulerovo číslo</string>
+    <string name="calc_key_inverse">Inverzné funkcie</string>
+    <string name="calc_angle_degrees">Stupne</string>
+    <string name="calc_angle_radians">Radiány</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">História</string>
+    <plurals name="calc_history_count">
+        <item quantity="one">%d výpočet</item>
+        <item quantity="few">%d výpočty</item>
+        <item quantity="many">%d výpočtu</item>
+        <item quantity="other">%d výpočtov</item>
+    </plurals>
+    <string name="calc_history_clear">Vymazať</string>
+    <string name="calc_history_clear_description">Vymazať históriu</string>
+    <string name="calc_history_back">Späť na klávesnicu</string>
+    <string name="calc_history_empty">Zatiaľ žiadne výpočty.\nVýsledky sa tu zobrazia po stlačení =.</string>
+    <string name="calc_history_cleared">História vymazaná</string>
+    <string name="calc_history_restore">Použiť tento výpočet</string>
+    <string name="calc_history_storage_failed">Históriu sa nepodarilo uložiť</string>
+</resources>

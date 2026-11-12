@@ -7,18 +7,15 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.scalc.calculator.common.AmountInput
 import com.scalc.calculator.common.NumericKey
-import com.scalc.calculator.exchange.data.CurrencyNames
 import com.scalc.calculator.exchange.data.ExchangeModule
 import com.scalc.calculator.exchange.data.ExchangeRepository
 import com.scalc.calculator.exchange.model.Currency
 import com.scalc.calculator.exchange.model.CurrencyMath
+import com.scalc.calculator.exchange.model.CurrencyNames
 import com.scalc.calculator.exchange.model.CurrencySelection
 import com.scalc.calculator.exchange.model.ExchangeState
-import com.scalc.calculator.exchange.model.RateStatus
 import com.scalc.calculator.exchange.model.RateStatusFormatter
-import com.scalc.calculator.exchange.model.RateStatusStrings
 import com.scalc.calculator.exchange.model.RateTable
-import com.scalc.calculator.exchange.model.StatusKind
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
@@ -49,14 +46,14 @@ import java.math.BigDecimal
  * - [state] is recomputed on every amount, pair or table change, and on a once-per-minute tick
  *   while the screen observes it, so "Fresh" turns into "Stale" after 24 h without any network
  *   request. Ticking stops a few seconds after the screen stops observing.
+ * - [state] holds no language-dependent text (see [ExchangeUiState]); this ViewModel outlives a
+ *   change of the system language, so the screen renders texts with the current resources.
  *
  * @param clock wall clock used to evaluate the rate status.
- * @param statusStrings texts of the status block (string resources in the app, defaults in tests).
  */
 class ExchangeViewModel(
     private val repository: ExchangeRepository,
     private val clock: () -> Long = System::currentTimeMillis,
-    private val statusStrings: RateStatusStrings = RateStatusStrings(),
 ) : ViewModel() {
 
     private val amount = MutableStateFlow(AmountInput(DEFAULT_AMOUNT))
@@ -181,7 +178,6 @@ class ExchangeViewModel(
         val from = currencyOf(exchange.selectedFrom, table)
         val to = currencyOf(exchange.selectedTo, table)
         val converted = table?.let { CurrencyMath.convert(input.value ?: BigDecimal.ZERO, from.code, to.code, it) }
-        val status = RateStatusFormatter.format(exchange, clock(), strings = statusStrings)
         return ExchangeUiState(
             loaded = exchange.loaded,
             amountText = input.display,
@@ -191,15 +187,12 @@ class ExchangeViewModel(
             conversionAvailable = converted != null,
             unitRateText = table?.let { CurrencyMath.unitRateText(from.code, to.code, it) },
             inverseRateText = table?.takeIf { from.code != to.code }?.let { CurrencyMath.unitRateText(to.code, from.code, it) },
-            status = if (status.kind == StatusKind.Cached) status.withUpdateFailedHint() else status,
+            pairRateDate = table?.pairRateDate(from.code, to.code)?.takeIf { it < table.rateDate },
+            status = RateStatusFormatter.describe(exchange, clock()),
             refreshing = exchange.refreshing,
             currencies = currenciesOf(table),
         )
     }
-
-    /** "Using cached rates" alone does not say why; the latest refresh attempt failed. */
-    private fun RateStatus.withUpdateFailedHint(): RateStatus =
-        copy(detail = listOfNotNull(detail, statusStrings.updateFailed).joinToString(statusStrings.separator))
 
     private fun currenciesOf(table: RateTable?): List<Currency> {
         if (table == null) return emptyList()
@@ -233,17 +226,14 @@ class ExchangeViewModel(
          * with the platform's English name, so selectors stay meaningful without rates.
          */
         internal fun currencyOf(code: String, table: RateTable?): Currency =
-            table?.currencyOf(code) ?: Currency(code, CurrencyNames.platformName(code) ?: code)
+            table?.currencyOf(code) ?: Currency(code, CurrencyNames.englishName(code))
 
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = checkNotNull(this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY]) {
                     "ExchangeViewModel requires the Application in its creation extras"
                 }
-                ExchangeViewModel(
-                    repository = ExchangeModule.repository(application),
-                    statusStrings = rateStatusStrings(application),
-                )
+                ExchangeViewModel(repository = ExchangeModule.repository(application))
             }
         }
     }

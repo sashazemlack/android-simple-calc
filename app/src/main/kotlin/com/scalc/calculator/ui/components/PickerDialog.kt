@@ -45,11 +45,19 @@ import com.scalc.calculator.ui.theme.FluentTheme
 import java.text.Normalizer
 import java.util.Locale
 
-/** One selectable row in a [PickerDialog]. [key] must be unique and stable. */
-data class PickerItem(val key: String, val title: String, val subtitle: String? = null)
+/**
+ * One selectable row in a [PickerDialog]. [key] must be unique and stable. [keywords] are extra
+ * search terms that are not displayed (e.g. a currency's English name next to its localized one).
+ */
+data class PickerItem(
+    val key: String,
+    val title: String,
+    val subtitle: String? = null,
+    val keywords: List<String> = emptyList(),
+)
 
 /**
- * Flat modal list picker with optional search (title + subtitle substring, case- and
+ * Flat modal list picker with optional search (title, subtitle and keyword substring, case- and
  * accent-insensitive, see [filterPickerItems]).
  * Used for unit selection (no search) and currency selection (searchable).
  */
@@ -180,14 +188,17 @@ fun PickerDialog(
 }
 
 /**
- * Substring filter on title and subtitle that ignores case and accents (see [foldForSearch]), so
- * "zloty" finds "Polish Złoty" and "krona" finds "Icelandic Króna". A blank query returns all items.
+ * Substring filter on title, subtitle and keywords that ignores case and accents (see
+ * [foldForSearch]), so "zloty" finds "Polish Złoty" and "krona" finds "Icelandic Króna". A blank
+ * query returns all items.
  */
 fun filterPickerItems(items: List<PickerItem>, query: String): List<PickerItem> {
     val q = foldForSearch(query.trim())
     if (q.isEmpty()) return items
     return items.filter { item ->
-        foldForSearch(item.title).contains(q) || item.subtitle?.let { foldForSearch(it).contains(q) } == true
+        foldForSearch(item.title).contains(q) ||
+            item.subtitle?.let { foldForSearch(it).contains(q) } == true ||
+            item.keywords.any { foldForSearch(it).contains(q) }
     }
 }
 

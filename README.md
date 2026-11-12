@@ -1,13 +1,15 @@
-# SCalc: Calculator Offline & Calculator Exchange
+# SCalc: Calculator (Offline and Exchange variants)
 
-One repository builds two native Android calculator apps, using Gradle product flavors:
+Simple calculator app for Android with minimal dependencies and permissions, distributed under the MIT license. Source: https://github.com/sashazemlack/android-simple-calc
+
+One repository builds two native Android apps, using Gradle product flavors:
 
 | Variant | Application ID | Tabs | Network |
 |---|---|---|---|
-| **Calculator Offline** | `com.scalc.calculator.offline` | Calculator · Unit Converter | none (no `INTERNET` permission) |
-| **Calculator Exchange** | `com.scalc.calculator.exchange` | Calculator · Exchange Rate · Unit Converter | HTTPS only, for daily exchange rates |
+| **Offline** | `com.scalc.calculator.offline` | Calculator · Unit Converter | none (no `INTERNET` permission) |
+| **Exchange** | `com.scalc.calculator.exchange` | Calculator · Exchange Rate · Unit Converter | HTTPS only, for daily exchange rates |
 
-Both apps can be installed side by side. Neither one uses Google Play Services, Firebase or any other Google API at runtime. Both were installed and tested on a Pixel 10a running GrapheneOS (Android 17, API 37), which has no Google Play Services.
+Both apps are named **"Calculator"** and use the same launcher icon. Only their application IDs differ, so they can be installed side by side. Neither one uses Google Play Services, Firebase or any other Google API at runtime. Both were installed and tested on a Pixel 10a running GrapheneOS (Android 17, API 37), which has no Google Play Services.
 
 The UI uses only Compose **Foundation/UI/Animation**, plus a small in-house design system modelled on **Windows 10 Fluent (2016–2017)** with a light Holo influence:
 - flat rectangular controls with 2–4 dp corners;
@@ -16,7 +18,12 @@ The UI uses only Compose **Foundation/UI/Animation**, plus a small in-house desi
 - the system sans-serif font;
 - custom line icons drawn on a Canvas.
 
-There are **no Material dependencies**: no Material components, typography, icons, ripple, elevation or dynamic color. Light, Dark and System themes are available in Settings (the gear icon at the top right). Choosing Light or Dark is saved.
+There are **no Material dependencies**: no Material components, typography, icons, ripple, elevation or dynamic color.
+
+**Settings** (the gear icon at the top right) has:
+- the theme choice: System, Light or Dark. Choosing Light or Dark is saved.
+- an About section with the version and the description above.
+- a **Git project** button that opens the repository in the default browser. The app hands the link to the browser with an `ACTION_VIEW` intent and makes no network request itself, so the Offline app still has no network permission.
 
 ---
 
@@ -38,13 +45,13 @@ app/src/
 │   │   ├── calc/history/       HistoryRepository (DataStore, versioned binary format, 100 entries)
 │   │   ├── calc/ui/            CalculatorViewModel, CalculatorScreen, scientific panel, history panel
 │   │   └── converter/          engine/ (exact factors), ui/ (category grid, conversion screen, ViewModel)
-│   └── res/                    shared strings, window themes, launcher icon, backup exclusion rules
-├── offline/                    flavor root: Flavor.kt (2 tabs), app name, about text
+│   └── res/                    shared strings, window themes, launcher icon (both apps), backup exclusion rules
+├── offline/                    flavor root: Flavor.kt (2 tabs), app name
 ├── exchange/                   the ONLY place where exchange-rate code exists
 │   ├── AndroidManifest.xml     INTERNET permission + network security config (HTTPS only)
 │   ├── kotlin/com/scalc/calculator/flavor/Flavor.kt   (3 tabs)
 │   ├── kotlin/com/scalc/calculator/exchange/{model,data,ui}/
-│   └── res/                    exchange strings, launcher badge, network_security_config.xml, ECB root cert
+│   └── res/                    exchange strings, network_security_config.xml, ECB root cert
 ├── test/                       JVM unit tests for shared code (run in both flavors)
 └── testExchange/               JVM unit tests for the exchange feature only
 ```
@@ -72,11 +79,19 @@ app/src/
 **Persistence.** AndroidX DataStore stores everything; no Room or KSP is needed.
 - `settings.preferences_pb`: theme mode, angle mode (DEG/RAD), last unit category and whether its screen was open, last From/To units per category.
 - `history.bin`: up to 100 calculations, newest first. Each entry stores the expression, result and timestamp. When the expression continued from a rounded previous result, it also stores that result's exact 34-digit value, so a restored entry recomputes identically. The format is versioned binary (v2; v1 files are still read). Corrupt files are reset.
-- `exchange_cache.bin` (Exchange only): the last rate table with currency names, the provider's rate date, the download time, ETag, refresh timestamps and the selected currencies.
+- `exchange_cache.bin` (Exchange only): the last rate table with the English currency names and each currency's rate date, the download time, ETag, refresh timestamps and the selected currencies. The format is versioned (v2); v1 files from earlier builds are still read.
 
 Typed amounts are never persisted. Nothing personal is stored. App backup and device-to-device transfer are both disabled (`allowBackup="false"` plus `data_extraction_rules.xml`), so no data leaves the device.
 
-The UI is English-only and always left-to-right (`supportsRtl="false"`), because keypads and expressions only make sense left to right.
+The UI is always laid out left to right (`supportsRtl="false"`), because keypads and expressions only make sense left to right.
+
+**Languages.** English (default), Spanish, Portuguese (Portugal), Czech, Slovak, German, French, Polish, Ukrainian, Japanese and Simplified Chinese.
+- Folders: `values-es`, `values-pt`, `values-cs`, `values-sk`, `values-de`, `values-fr`, `values-pl`, `values-uk`, `values-ja` and `values-b+zh+Hans`, under `src/main/res` and `src/exchange/res`.
+- The app always follows the system language and has no language setting of its own.
+- On Android 13+ a generated locale config (`androidResources.generateLocaleConfig`) lists these languages under Settings → System → Languages → App languages.
+- Changing the language recreates the screen. Texts that live beyond the screen, such as the exchange status and the currency names, are rendered again in the new language from language-free state.
+- Dates use the language's own pattern and the system 12/24-hour setting.
+- Numbers keep the calculator's fixed format (`1,234.5`) in every language, so typing, pasting and copying work the same everywhere.
 
 ## 2. Build environment (command line only, no IDE)
 
@@ -122,8 +137,8 @@ To reproduce on another machine:
 ## 3. Building
 
 ```
-gradlew.bat assembleOfflineDebug      # Calculator Offline
-gradlew.bat assembleExchangeDebug     # Calculator Exchange
+gradlew.bat assembleOfflineDebug      # Offline variant
+gradlew.bat assembleExchangeDebug     # Exchange variant
 ```
 
 **APK locations** (standard Gradle output directories):
@@ -143,23 +158,32 @@ powershell -ExecutionPolicy Bypass -File scripts\verify-flavors.ps1   # APK isol
 ```
 
 Current results:
-- `testOfflineDebugUnitTest`: **539 tests, 0 failures**.
-- `testExchangeDebugUnitTest`: **675 tests, 0 failures**. This is the 539 shared tests plus 136 exchange tests.
-- Both lint tasks report **"No issues found"**.
+- `testOfflineDebugUnitTest`: **549 tests, 0 failures**.
+- `testExchangeDebugUnitTest`: **714 tests, 0 failures**. This is the 549 shared tests plus 165 exchange tests.
+- Both lint tasks report **"No issues found"**. Lint also fails the build if any of the 10 languages is missing a string.
 - `verify-flavors.ps1` passes all **17 checks**.
 
 The tests cover:
 - **Engine:** arithmetic and precedence, percent and modulo, powers, roots, factorials, trigonometry in DEG and RAD, logarithms, implicit multiplication, errors, number formatting, paste normalization, and a seeded fuzz test of the editor.
-- **Calculator ViewModel:** live result, `=` and carry, history restore without a new record, paste and copy, inverse and RAD/DEG keys, persistence, process-death state, and layout math.
-- **Unit converter:** every category, all 280 ordered unit pairs round-tripped, temperature offsets, and ViewModel persistence.
-- **Exchange:** Frankfurter and ECB parsers, the HTTP client (ETag/304, fallback, errors, HTTPS only), the cache serializer and corruption, the 24 h policy (clock changes, failures, forced refresh), status texts, the ViewModel (conversion, swap, currency selection, default amount, stale ticking), the pull-to-refresh state machine and the network security config.
+- **Calculator ViewModel and layout:** live result, `=` and carry, history restore without a new record, paste and copy, inverse and RAD/DEG keys, persistence, process-death state, the portrait height split, the landscape switch and split, and both scientific key arrangements.
+- **Unit converter:** every category, all 280 ordered unit pairs round-tripped, temperature offsets, ViewModel persistence, and the landscape side-by-side rule.
+- **Exchange:**
+  - Frankfurter (blended feed, parsed against saved live payloads) and ECB parsers.
+  - Crypto and metal filtering, per-currency dates and stale rows.
+  - Currency names in several languages.
+  - The HTTP client (ETag/304, fallback, errors, HTTPS only).
+  - The cache serializer, its v1→v2 migration and corruption handling.
+  - The 24 h policy (clock changes, failures, forced refresh).
+  - Status texts, including switching language.
+  - The ViewModel (conversion, swap, currency selection, default amount, stale ticking).
+  - The pull-to-refresh state machine and the network security config.
 
 `scripts/verify-flavors.ps1` inspects the built APKs with `aapt2` and `apkanalyzer`. It checks that:
 - the Offline APK has no `INTERNET` or network-state permission;
 - the Offline APK has no `com.scalc.calculator.exchange` classes, no exchange string resources and no provider URLs;
 - the Exchange APK has the permission, the classes and the provider URL;
 - neither APK contains classes from Material, Play Services, Firebase, Play Core/Play Integrity, Play Billing, ML Kit or other proprietary Google SDKs;
-- the application IDs, labels, `minSdk` and `targetSdk` are correct.
+- the application IDs are distinct, both labels are "Calculator", and `minSdk` and `targetSdk` are correct.
 
 ## 5. Installing with ADB
 
@@ -193,6 +217,18 @@ adb shell am start -n com.scalc.calculator.exchange/com.scalc.calculator.MainAct
   ```
 - The angle unit is saved between launches.
 
+**Landscape (phones).** When the screen is wider than tall and shorter than 600 dp (a phone turned sideways), the calculator switches to a compact landscape layout:
+- History, Paste and Copy sit to the left of the display, in one band, which leaves room for five key rows of about 44 dp.
+- The scientific keys are always visible, in 3 columns × 5 rows on the left. Each row lines up with a row of the standard 4 × 5 keypad on the right:
+  ```
+  inv  RAD  DEG │  C   %   ⌫   ÷
+  sin  cos  tan │  7   8   9   ×
+  ln   log  !   │  4   5   6   −
+  π    e    ^   │  1   2   3   +
+  (    )    √   │ +/−  0   .   =
+  ```
+- Taller landscape screens, such as tablets, keep the portrait layout with the expandable scientific panel.
+
 **History.** The history panel replaces the keypad area. It keeps 100 entries, newest first, each with a timestamp. Tap an entry to restore it; restoring does not create a new record. You can clear all entries, and Back or the chevron returns to the keypad.
 
 **Engine.** The engine is a hand-written tokenizer, a recursive-descent parser and a `BigDecimal` evaluator with 34 significant digits. There is no `eval`, scripting or reflection.
@@ -221,6 +257,8 @@ A 2-column grid shows 8 categories; the last one used is marked. Each conversion
 
 The last category and the last units per category are saved.
 
+In landscape, the conversion screen puts the fields on the left and the keypad on the right, like the Exchange Rate tab. Each unit selector then shows its amount beside it. The category grid adds a column for every 180 dp of width, so all 8 categories fit in 2 rows on a phone turned sideways.
+
 All factors are exact definitions, stored as `BigDecimal` ratios to the SI base unit, with one 34-digit division per conversion:
 
 | Category | Units (factor to base) |
@@ -234,19 +272,24 @@ All factors are exact definitions, stored as `BigDecimal` ratios to the SI base 
 | Power (W) | W, kW, MW; PS (metric hp) = 735.49875; hp (mechanical) = 745.69987158227022 |
 | Pressure (Pa) | Pa, kPa, bar = 10⁵, atm = 101325, psi = lbf/in² ≈ 6894.757293168361, mmHg = 133.322387415 |
 
-## 8. Exchange rates (Calculator Exchange only)
+## 8. Exchange rates (Exchange variant only)
 
-**Provider.** The app uses [Frankfurter](https://frankfurter.dev) API v2, restricted to the official **European Central Bank euro reference rates**:
-- Rates: `GET https://api.frankfurter.dev/v2/rates?providers=ECB`
-- Currency names: `GET https://api.frankfurter.dev/v2/currencies?providers=ECB`
+**Provider.** The app uses [Frankfurter](https://frankfurter.dev) API v2 and its default **blended** feed. That feed combines the daily rates of more than 100 central banks and other official sources, such as the ECB, NBP, CNB, Bank of Canada and the IMF. Weekly and monthly sources are excluded.
+- Rates: `GET https://api.frankfurter.dev/v2/rates`. This returns a JSON array of `{date, base: "EUR", quote, rate}`, with each row carrying its own date.
+- Currency names and types: `GET https://api.frankfurter.dev/v2/currencies`.
 
-Frankfurter needs no API key and has no quotas. It is MIT-licensed open source and does not log personal data.
+Frankfurter needs no API key and has no quotas. Its FAQ says the blended rates are "Frankfurter's own calculation and free to use", and that the API does not collect or log personal data, IP addresses or request URLs. The app shows "Source: central bank and other official rates blended by frankfurter.dev · cross rates calculated on device". The rates are mid-market reference rates for information, not transaction quotes.
 
-The ECB data may be reused freely with attribution. The app shows "Source: European Central Bank via frankfurter.dev · cross rates calculated on device". The ECB says the rates are for information only, not for transactions.
+**Coverage.**
+- About **160 fiat currencies**. The app keeps only entries of type `currency` and drops crypto and precious metals. If the name list is unavailable, it keeps only codes Android knows as currencies.
+- Rows more than 7 days older than the newest one are dropped as stale.
+- EUR, USD, GBP, CZK, JPY, CHF and PLN are pinned at the top of the picker, followed by all the others by code.
+- Currency names come from the system's own data (ICU) in the current language, for example "US-Dollar" or "米ドル". The provider's English name is used when the system has none.
+- Search matches the code, the local name and the English name, ignoring accents.
 
-If Frankfurter is unreachable, the app reads the same data directly from the ECB at `https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`. That host's certificate chain ends at a 2021 Sectigo root that Android 7–13 do not ship. The app therefore bundles that root and trusts it **for this one host only**; all other traffic uses the system trust store, and cleartext is denied.
-
-Coverage is the ECB set of about 30 currencies, including EUR, USD, GBP, CZK, JPY, CHF and PLN, which are pinned at the top of the searchable picker. The ECB publishes once per TARGET working day, around 16:00 CET.
+**Fallback.** If Frankfurter is unreachable, the app reads the ECB's own daily file at `https://www.ecb.europa.eu/stats/eurofxref/eurofxref-daily.xml`. That file has about 30 currencies and is published around 16:00 CET on TARGET working days; the app then shows "Source: European Central Bank".
+- The ECB host's certificate chain ends at a 2021 Sectigo root that Android 7–13 don't ship. The app bundles that root and trusts it **for this one host only**.
+- All other traffic uses the system trust store, and cleartext is denied.
 
 Two other no-key APIs were evaluated and rejected:
 - fawazahmed0/exchange-api: its data sources are undocumented.
@@ -270,11 +313,13 @@ Two other no-key APIs were evaluated and rejected:
 - This is a custom NestedScroll implementation, not a Material component. TalkBack users get a "Refresh exchange rates" action on the status block.
 
 **Status block.** A text block directly above the numeric keypad always describes the data. It keeps this app's download time separate from the provider's rate date:
-- *Rates last updated: 11 Nov 2026, 22:56* · ECB reference rates of 11 Nov 2026
+- *Rates last updated: 12 Nov 2026, 00:13* · Exchange rates of 12 Nov 2026. This is the newest rate date. If the selected pair's rate is older (rows can differ by a day), the pair's rate line adds "(as of 11 Nov 2026)".
 - *Refreshing exchange rates...*
 - *Using cached rates · Last updated: …*: the latest refresh attempt failed (for example offline) and the cached table is shown.
 - *Using cached rates (may be outdated) · …*: the data is more than 24 hours old. It is shown in the warning color, and the status turns stale while the app stays open.
 - *Exchange rates unavailable. Swipe down to retry.*: there is no cache yet and the download failed.
+
+**Landscape.** The fields are on the left; the status block and keypad are on the right.
 
 **Offline caching.** The last successful table is stored in `exchange_cache.bin` and loaded at start. Without a connection, conversions keep working from that cache, which is labelled as cached or outdated. With no cache at all, the app shows a clear unavailable state; it never crashes or blocks. The amount starts at a default of 1, which the first key you type replaces.
 
@@ -297,10 +342,18 @@ Neither app depends on Material, Play Services, Firebase or any network library.
 | `android.permission.INTERNET` | — | ✔ |
 | `<appId>.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION` (signature-level, added by androidx.core) | ✔ | ✔ |
 
+**GrapheneOS "Sensors" permission.** GrapheneOS adds its own `android.permission.OTHER_SENSORS` toggle to every installed app; the APKs don't declare it (`aapt2 dump permissions` doesn't list it). An app can't remove it. Neither app reads any sensor, so it is safe to turn it off: in App info → Permissions → Sensors, or for all new apps under Settings → Privacy. On GrapheneOS the Exchange app also gets the OS "Network" toggle, which comes from its `INTERNET` permission.
+
+**Background activity.** Neither app has a service, scheduled job, alarm, boot receiver or any other way to run without being open.
+- The only non-UI components come from AndroidX: the startup provider (lifecycle and profile installer, which run while the app is open) and the profile-install receiver, which only adb and the system can call.
+- Android doesn't let an app make "Restricted" its own default for background battery usage (the default is "Optimized").
+- You can set App info → App battery usage → Restricted yourself without losing anything: exchange rates are only fetched while the Exchange Rate tab is open.
+
 ## 10. Known limitations
 
 - Android 7.0–16 (API 24–36) compatibility is checked by lint (`NewApi`, `minSdk 24`) and unit tests. It was not run on a physical device or emulator below API 37, because only a Pixel 10a (API 37) was available and no emulator was installed.
-- Not exercised on the device, because each would need system-setting changes: airplane-mode behavior of the Exchange app (covered by unit tests), rotation, large system font scales and TalkBack.
+- Not exercised on the device, because each would need system-setting changes: airplane-mode behavior of the Exchange app (covered by unit tests), large system font scales and TalkBack. Landscape was checked on the Pixel 10a by turning the phone with auto-rotate on.
 - Trigonometric and logarithmic results are accurate to about 15–16 digits (double precision); arithmetic is exact to 34 digits.
-- ECB reference rates cover about 30 currencies and are published once per working day.
+- The blended feed covers about 160 currencies, each with its own date. Rates are updated once a day at most and are mid-market reference rates, not transaction quotes. The ECB fallback covers about 30.
+- Numbers use the same format in every language (`.` as the decimal point).
 - Kotlin Gradle Plugin 2.4.21 is newer than the newest Gradle/AGP combination its release notes list as tested. The build is clean, with no warnings.

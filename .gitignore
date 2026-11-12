@@ -10,3 +10,7 @@ captures/
 .cxx/
 *.apk
 !gradle/wrapper/gradle-wrapper.jar
+# Release signing secrets (never commit)
+keystore.properties
+*.jks
+*.keystore

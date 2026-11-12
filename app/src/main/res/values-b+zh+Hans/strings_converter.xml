@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unit converter screen -->
+    <string name="conv_back">返回类别</string>
+    <string name="conv_from">从</string>
+    <string name="conv_to">到</string>
+    <string name="conv_pick_from">选择原单位</string>
+    <string name="conv_pick_to">选择目标单位</string>
+    <string name="conv_swap">互换</string>
+    <string name="conv_swap_description">互换单位</string>
+    <string name="conv_last_used">上次使用</string>
+    <string name="conv_below_absolute_zero">低于绝对零度（0 K）</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Amount: 12.5 Meter" -->
+    <string name="conv_amount_description">数值：%1$s %2$s</string>
+    <string name="conv_result_description">结果：%1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">长度</string>
+    <string name="conv_category_area">面积</string>
+    <string name="conv_category_volume">体积</string>
+    <string name="conv_category_speed">速度</string>
+    <string name="conv_category_mass">重量/质量</string>
+    <string name="conv_category_temperature">温度</string>
+    <string name="conv_category_power">功率</string>
+    <string name="conv_category_pressure">压力</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">毫米</string>
+    <string name="conv_unit_centimeter">厘米</string>
+    <string name="conv_unit_meter">米</string>
+    <string name="conv_unit_kilometer">千米</string>
+    <string name="conv_unit_inch">英寸</string>
+    <string name="conv_unit_foot">英尺</string>
+    <string name="conv_unit_yard">码</string>
+    <string name="conv_unit_mile">英里</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">平方米</string>
+    <string name="conv_unit_square_kilometer">平方千米</string>
+    <string name="conv_unit_hectare">公顷</string>
+    <string name="conv_unit_acre">英亩</string>
+    <string name="conv_unit_square_foot">平方英尺</string>
+    <string name="conv_unit_square_mile">平方英里</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">毫升</string>
+    <string name="conv_unit_liter">升</string>
+    <string name="conv_unit_cubic_meter">立方米</string>
+    <string name="conv_unit_us_gallon">美制加仑</string>
+    <string name="conv_unit_us_quart">美制夸脱</string>
+    <string name="conv_unit_us_fluid_ounce">美制液量盎司</string>
+    <string name="conv_unit_us_cup">美制杯</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">米每秒</string>
+    <string name="conv_unit_kilometer_per_hour">千米每小时</string>
+    <string name="conv_unit_mile_per_hour">英里每小时</string>
+    <string name="conv_unit_foot_per_second">英尺每秒</string>
+    <string name="conv_unit_knot">节</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">毫克</string>
+    <string name="conv_unit_gram">克</string>
+    <string name="conv_unit_kilogram">千克</string>
+    <string name="conv_unit_tonne">吨</string>
+    <string name="conv_unit_ounce">盎司</string>
+    <string name="conv_unit_pound">磅</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">摄氏度</string>
+    <string name="conv_unit_fahrenheit">华氏度</string>
+    <string name="conv_unit_kelvin">开尔文</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">瓦特</string>
+    <string name="conv_unit_kilowatt">千瓦</string>
+    <string name="conv_unit_megawatt">兆瓦</string>
+    <string name="conv_unit_metric_horsepower">公制马力</string>
+    <string name="conv_unit_mechanical_horsepower">英制马力</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">帕斯卡</string>
+    <string name="conv_unit_kilopascal">千帕</string>
+    <string name="conv_unit_bar">巴</string>
+    <string name="conv_unit_atmosphere">标准大气压</string>
+    <string name="conv_unit_psi">磅力每平方英寸</string>
+    <string name="conv_unit_mmhg">毫米汞柱</string>
+</resources>

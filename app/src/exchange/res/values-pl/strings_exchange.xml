@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">Z</string>
+    <string name="exch_to">Na</string>
+    <string name="exch_swap">Zamień</string>
+    <string name="exch_swap_description">Zamień waluty</string>
+    <string name="exch_pick_from">Przelicz z</string>
+    <string name="exch_pick_to">Przelicz na</string>
+    <string name="exch_search_placeholder">Szukaj waluty lub kodu</string>
+    <string name="exch_search_empty">Brak pasujących walut</string>
+    <!-- %1$s = formatted amount, %2$s = currency name, e.g. "Amount: 12.5 Euro" -->
+    <string name="exch_amount_description">Kwota: %1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name, e.g. "Converted amount: 13.91 US Dollar" -->
+    <string name="exch_result_description">Kwota po przeliczeniu: %1$s %2$s</string>
+    <string name="exch_result_unavailable">Kwota po przeliczeniu jest niedostępna</string>
+    <!-- %1$s = data source, e.g. "Source: central bank and other official rates blended by frankfurter.dev" -->
+    <string name="exch_attribution">%1$s · kursy krzyżowe obliczone na urządzeniu</string>
+    <!-- Compact layout: both unit rates on one line, e.g. "1 EUR = 1.1127 USD · 1 USD = 0.898715 EUR" -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- Rate line of the selected pair when its rate is older than the newest rates.
+         %1$s = rate line, e.g. "1 EUR = 1.9949 ANG", %2$s = date of that rate, e.g. "11 Nov 2026" -->
+    <string name="exch_rate_dated">%1$s (stan na %2$s)</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">Odświeżanie kursów walut</string>
+    <string name="exch_refresh_action">Odśwież kursy walut</string>
+    <string name="exch_feedback_updated">Zaktualizowano kursy walut</string>
+    <string name="exch_feedback_failed">Nie udało się odświeżyć kursów walut</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">Wczytywanie kursów walut…</string>
+    <string name="exch_status_refreshing">Odświeżanie kursów walut…</string>
+    <!-- %1$s = download date and time, e.g. "12 Nov 2026, 10:15" -->
+    <string name="exch_status_fresh">Ostatnia aktualizacja kursów: %1$s</string>
+    <string name="exch_status_cached">Używane są zapisane kursy · Ostatnia aktualizacja: %1$s</string>
+    <string name="exch_status_stale">Używane są zapisane kursy (mogą być nieaktualne) · Ostatnia aktualizacja: %1$s</string>
+    <string name="exch_status_unavailable">Kursy walut są niedostępne. Przesuń w dół, aby spróbować ponownie.</string>
+    <string name="exch_status_last_updated">Ostatnia aktualizacja: %1$s</string>
+    <!-- %1$s = newest date of the downloaded rates (provider date, not the download time), e.g. "12 Nov 2026" -->
+    <string name="exch_status_rate_date">Kursy walut z dnia %1$s</string>
+    <!-- Same for rates published by the European Central Bank (fallback source), e.g. "ECB reference rates of 11 Nov 2026" -->
+    <string name="exch_status_rate_date_ecb">Kursy referencyjne EBC z dnia %1$s</string>
+    <string name="exch_status_update_failed">Aktualizacja nie powiodła się. Przesuń w dół, aby spróbować ponownie.</string>
+    <!-- Joins two parts of the status detail line,
+         e.g. "Exchange rates of 12 Nov 2026 · Update failed. Swipe down to retry." -->
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">Brak połączenia z internetem.</string>
+    <string name="exch_error_server">Usługa kursów walut jest teraz niedostępna.</string>
+    <string name="exch_error_invalid_data">Usługa kursów walut zwróciła nieprawidłowe dane.</string>
+    <!-- Data sources (shown before "· cross rates calculated on device"). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">Źródło: kursy banków centralnych i inne kursy oficjalne połączone przez frankfurter.dev</string>
+    <!-- Rates downloaded by earlier app versions (European Central Bank data via frankfurter.dev) -->
+    <string name="exch_source_frankfurter">Źródło: Europejski Bank Centralny za pośrednictwem frankfurter.dev</string>
+    <string name="exch_source_ecb">Źródło: Europejski Bank Centralny</string>
+</resources>

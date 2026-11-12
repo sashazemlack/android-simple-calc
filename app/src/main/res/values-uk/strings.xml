@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Both apps (Offline and Exchange) share the name. -->
+    <string name="app_name">Калькулятор</string>
+    <string name="tab_calculator">Калькулятор</string>
+    <string name="tab_converter">Одиниці</string>
+
+    <string name="settings">Налаштування</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_about">Про застосунок</string>
+    <string name="theme_system">Системна</string>
+    <string name="theme_light">Світла</string>
+    <string name="theme_dark">Темна</string>
+    <string name="close">Закрити</string>
+    <string name="about_description">Простий калькулятор для Android із мінімальною кількістю залежностей і дозволів, що поширюється за ліцензією MIT</string>
+    <string name="settings_git_project">Проєкт Git</string>
+    <string name="settings_link_failed">Немає застосунку, який може відкрити посилання.</string>
+    <string name="settings_save_failed">Не вдалося зберегти тему. Перевірте, чи є вільне місце в памʼяті.</string>
+
+    <!-- Shared amount keypad (unit converter and currency converter): accessibility labels. -->
+    <string name="keypad_toggle_sign">Змінити знак</string>
+    <string name="keypad_double_zero">Подвійний нуль</string>
+    <string name="keypad_decimal">Десяткова крапка</string>
+    <string name="keypad_clear">Очистити</string>
+    <string name="keypad_backspace">Видалити</string>
+
+    <!-- Shared list picker (units, currencies). -->
+    <string name="picker_search">Пошук</string>
+    <string name="picker_no_matches">Нічого не знайдено</string>
+    <string name="picker_clear_search">Очистити пошук</string>
+</resources>

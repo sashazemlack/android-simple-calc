@@ -42,7 +42,8 @@ private val SelectorLabelGap = 4.dp
 
 /**
  * Upper part of the Exchange screen: source currency and typed amount, swap control, destination
- * currency and converted value, followed by the unit rates and the data attribution.
+ * currency and converted value, followed by the unit rates and the data attribution. Names and
+ * other language-dependent texts come from [texts].
  *
  * With [compact] each selector sits beside its amount instead of above it and both unit rates
  * share one line, which saves about 100 dp of height for short or landscape viewports.
@@ -50,6 +51,7 @@ private val SelectorLabelGap = 4.dp
 @Composable
 internal fun ExchangeFields(
     state: ExchangeUiState,
+    texts: LocalizedExchangeTexts,
     onPickFrom: () -> Unit,
     onPickTo: () -> Unit,
     onSwap: () -> Unit,
@@ -57,9 +59,9 @@ internal fun ExchangeFields(
     compact: Boolean = false,
 ) {
     val colors = FluentTheme.colors
-    val amountDescription = stringResource(R.string.exch_amount_description, state.amountText, state.from.name)
+    val amountDescription = stringResource(R.string.exch_amount_description, state.amountText, texts.fromName)
     val resultDescription = if (state.conversionAvailable) {
-        stringResource(R.string.exch_result_description, state.convertedText, state.to.name)
+        stringResource(R.string.exch_result_description, state.convertedText, texts.toName)
     } else {
         stringResource(R.string.exch_result_unavailable)
     }
@@ -69,6 +71,7 @@ internal fun ExchangeFields(
         CurrencyAmount(
             label = stringResource(R.string.exch_from),
             currency = state.from,
+            currencyName = texts.fromName,
             enabled = state.ratesAvailable,
             onPick = onPickFrom,
             amount = "${state.amountText} ${state.from.code}",
@@ -95,6 +98,7 @@ internal fun ExchangeFields(
         CurrencyAmount(
             label = stringResource(R.string.exch_to),
             currency = state.to,
+            currencyName = texts.toName,
             enabled = state.ratesAvailable,
             onPick = onPickTo,
             amount = "${state.convertedText} ${state.to.code}",
@@ -102,7 +106,7 @@ internal fun ExchangeFields(
             amountDescription = resultDescription,
             compact = compact,
         )
-        RateInfo(state, compact, Modifier.padding(top = 6.dp))
+        RateInfo(state, texts, compact, Modifier.padding(top = 6.dp))
     }
 }
 
@@ -114,6 +118,7 @@ internal fun ExchangeFields(
 private fun CurrencyAmount(
     label: String,
     currency: Currency,
+    currencyName: String,
     enabled: Boolean,
     onPick: () -> Unit,
     amount: String,
@@ -127,7 +132,7 @@ private fun CurrencyAmount(
         // Shifts the amount below the selector's caption so both center on the bordered box.
         val labelHeight = with(LocalDensity.current) { FluentTheme.typography.caption.lineHeight.toDp() }
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            CurrencySelector(label, currency, enabled, onPick, Modifier.width(CompactSelectorWidth))
+            CurrencySelector(label, currency.code, currencyName, enabled, onPick, Modifier.width(CompactSelectorWidth))
             Spacer(Modifier.width(CompactSelectorGap))
             AutoShrinkText(
                 text = amount,
@@ -140,7 +145,7 @@ private fun CurrencyAmount(
             )
         }
     } else {
-        CurrencySelector(label, currency, enabled, onPick, Modifier.fillMaxWidth())
+        CurrencySelector(label, currency.code, currencyName, enabled, onPick, Modifier.fillMaxWidth())
         AutoShrinkText(
             text = amount,
             style = style,
@@ -157,15 +162,16 @@ private fun CurrencyAmount(
 @Composable
 private fun CurrencySelector(
     label: String,
-    currency: Currency,
+    code: String,
+    name: String,
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier,
 ) {
     SelectorField(
         label = label,
-        value = currency.code,
-        supporting = currency.name,
+        value = code,
+        supporting = name,
         onClick = onClick,
         enabled = enabled,
         modifier = modifier.then(if (enabled) Modifier else Modifier.alpha(DISABLED_ALPHA)),
@@ -174,10 +180,11 @@ private fun CurrencySelector(
 
 /**
  * Unit rates in both directions and the data source; nothing while no rates are available. With
- * [compact] both unit rates share one (wrapping) line.
+ * [compact] both unit rates share one (wrapping) line. When the selected pair's rate is older than
+ * the newest rates (see [ExchangeUiState.pairRateDate]), the first rate line also shows its date.
  */
 @Composable
-private fun RateInfo(state: ExchangeUiState, compact: Boolean, modifier: Modifier = Modifier) {
+private fun RateInfo(state: ExchangeUiState, texts: LocalizedExchangeTexts, compact: Boolean, modifier: Modifier = Modifier) {
     val colors = FluentTheme.colors
     val caption = FluentTheme.typography.caption
     val unitRate = state.unitRateText
@@ -187,8 +194,15 @@ private fun RateInfo(state: ExchangeUiState, compact: Boolean, modifier: Modifie
     } else {
         listOfNotNull(unitRate, inverseRate)
     }
-    val lines = rateLines + listOfNotNull(
-        state.status.attribution?.let { stringResource(R.string.exch_attribution, it) },
+    val firstLine = rateLines.firstOrNull()
+    val pairDate = texts.pairRateDate
+    val datedFirstLine = if (firstLine != null && pairDate != null) {
+        stringResource(R.string.exch_rate_dated, firstLine, pairDate)
+    } else {
+        firstLine
+    }
+    val lines = listOfNotNull(datedFirstLine) + rateLines.drop(1) + listOfNotNull(
+        texts.status.attribution?.let { stringResource(R.string.exch_attribution, it) },
     )
     if (lines.isEmpty()) return
     Column(modifier.fillMaxWidth()) {

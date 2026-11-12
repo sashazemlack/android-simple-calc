@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">Z</string>
+    <string name="exch_to">Na</string>
+    <string name="exch_swap">Prehodiť</string>
+    <string name="exch_swap_description">Prehodiť meny</string>
+    <string name="exch_pick_from">Previesť z</string>
+    <string name="exch_pick_to">Previesť na</string>
+    <string name="exch_search_placeholder">Hľadať menu alebo kód</string>
+    <string name="exch_search_empty">Žiadne zodpovedajúce meny</string>
+    <!-- %1$s = formatted amount, %2$s = currency name, e.g. "Amount: 12.5 Euro" -->
+    <string name="exch_amount_description">Suma: %1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name, e.g. "Converted amount: 13.91 US Dollar" -->
+    <string name="exch_result_description">Prepočítaná suma: %1$s %2$s</string>
+    <string name="exch_result_unavailable">Prepočítaná suma nie je k dispozícii</string>
+    <!-- %1$s = data source, e.g. "Source: central bank and other official rates blended by frankfurter.dev" -->
+    <string name="exch_attribution">%1$s · krížové kurzy vypočítané v zariadení</string>
+    <!-- Compact layout: both unit rates on one line, e.g. "1 EUR = 1.1127 USD · 1 USD = 0.898715 EUR" -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- Rate line of the selected pair when its rate is older than the newest rates.
+         %1$s = rate line, e.g. "1 EUR = 1.9949 ANG", %2$s = date of that rate, e.g. "11 Nov 2026" -->
+    <string name="exch_rate_dated">%1$s (k %2$s)</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">Aktualizácia kurzov</string>
+    <string name="exch_refresh_action">Aktualizovať kurzy</string>
+    <string name="exch_feedback_updated">Kurzy boli aktualizované</string>
+    <string name="exch_feedback_failed">Kurzy sa nepodarilo aktualizovať</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">Načítavanie kurzov…</string>
+    <string name="exch_status_refreshing">Aktualizácia kurzov…</string>
+    <!-- %1$s = download date and time, e.g. "12 Nov 2026, 10:15" -->
+    <string name="exch_status_fresh">Posledná aktualizácia kurzov: %1$s</string>
+    <string name="exch_status_cached">Používajú sa uložené kurzy · Posledná aktualizácia: %1$s</string>
+    <string name="exch_status_stale">Používajú sa uložené kurzy (môžu byť zastarané) · Posledná aktualizácia: %1$s</string>
+    <string name="exch_status_unavailable">Kurzy nie sú k dispozícii. Potiahnutím nadol to skúste znova.</string>
+    <string name="exch_status_last_updated">Posledná aktualizácia: %1$s</string>
+    <!-- %1$s = newest date of the downloaded rates (provider date, not the download time), e.g. "12 Nov 2026" -->
+    <string name="exch_status_rate_date">Kurzy zo dňa %1$s</string>
+    <!-- Same for rates published by the European Central Bank (fallback source), e.g. "ECB reference rates of 11 Nov 2026" -->
+    <string name="exch_status_rate_date_ecb">Referenčné kurzy ECB zo dňa %1$s</string>
+    <string name="exch_status_update_failed">Aktualizácia zlyhala. Potiahnutím nadol to skúste znova.</string>
+    <!-- Joins two parts of the status detail line,
+         e.g. "Exchange rates of 12 Nov 2026 · Update failed. Swipe down to retry." -->
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">Žiadne pripojenie k internetu.</string>
+    <string name="exch_error_server">Služba výmenných kurzov momentálne nie je dostupná.</string>
+    <string name="exch_error_invalid_data">Služba výmenných kurzov vrátila neplatné údaje.</string>
+    <!-- Data sources (shown before "· cross rates calculated on device"). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">Zdroj: kurzy centrálnych bánk a ďalšie oficiálne kurzy zlúčené službou frankfurter.dev</string>
+    <!-- Rates downloaded by earlier app versions (European Central Bank data via frankfurter.dev) -->
+    <string name="exch_source_frankfurter">Zdroj: Európska centrálna banka prostredníctvom frankfurter.dev</string>
+    <string name="exch_source_ecb">Zdroj: Európska centrálna banka</string>
+</resources>

@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unit converter screen -->
+    <string name="conv_back">Назад до категорій</string>
+    <string name="conv_from">З</string>
+    <string name="conv_to">У</string>
+    <string name="conv_pick_from">Початкова одиниця</string>
+    <string name="conv_pick_to">Цільова одиниця</string>
+    <string name="conv_swap">Поміняти</string>
+    <string name="conv_swap_description">Поміняти одиниці місцями</string>
+    <string name="conv_last_used">Використано востаннє</string>
+    <string name="conv_below_absolute_zero">Нижче абсолютного нуля (0 K)</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Amount: 12.5 Meter" -->
+    <string name="conv_amount_description">Значення: %1$s %2$s</string>
+    <string name="conv_result_description">Результат: %1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">Довжина</string>
+    <string name="conv_category_area">Площа</string>
+    <string name="conv_category_volume">Обʼєм</string>
+    <string name="conv_category_speed">Швидкість</string>
+    <string name="conv_category_mass">Вага / маса</string>
+    <string name="conv_category_temperature">Температура</string>
+    <string name="conv_category_power">Потужність</string>
+    <string name="conv_category_pressure">Тиск</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">Міліметр</string>
+    <string name="conv_unit_centimeter">Сантиметр</string>
+    <string name="conv_unit_meter">Метр</string>
+    <string name="conv_unit_kilometer">Кілометр</string>
+    <string name="conv_unit_inch">Дюйм</string>
+    <string name="conv_unit_foot">Фут</string>
+    <string name="conv_unit_yard">Ярд</string>
+    <string name="conv_unit_mile">Миля</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">Квадратний метр</string>
+    <string name="conv_unit_square_kilometer">Квадратний кілометр</string>
+    <string name="conv_unit_hectare">Гектар</string>
+    <string name="conv_unit_acre">Акр</string>
+    <string name="conv_unit_square_foot">Квадратний фут</string>
+    <string name="conv_unit_square_mile">Квадратна миля</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">Мілілітр</string>
+    <string name="conv_unit_liter">Літр</string>
+    <string name="conv_unit_cubic_meter">Кубічний метр</string>
+    <string name="conv_unit_us_gallon">Американський галон</string>
+    <string name="conv_unit_us_quart">Американська кварта</string>
+    <string name="conv_unit_us_fluid_ounce">Американська рідка унція</string>
+    <string name="conv_unit_us_cup">Чашка (США)</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">Метр за секунду</string>
+    <string name="conv_unit_kilometer_per_hour">Кілометр за годину</string>
+    <string name="conv_unit_mile_per_hour">Миля за годину</string>
+    <string name="conv_unit_foot_per_second">Фут за секунду</string>
+    <string name="conv_unit_knot">Вузол</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">Міліграм</string>
+    <string name="conv_unit_gram">Грам</string>
+    <string name="conv_unit_kilogram">Кілограм</string>
+    <string name="conv_unit_tonne">Метрична тонна</string>
+    <string name="conv_unit_ounce">Унція</string>
+    <string name="conv_unit_pound">Фунт</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">Градус Цельсія</string>
+    <string name="conv_unit_fahrenheit">Градус Фаренгейта</string>
+    <string name="conv_unit_kelvin">Кельвін</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">Ват</string>
+    <string name="conv_unit_kilowatt">Кіловат</string>
+    <string name="conv_unit_megawatt">Мегават</string>
+    <string name="conv_unit_metric_horsepower">Метрична кінська сила</string>
+    <string name="conv_unit_mechanical_horsepower">Механічна кінська сила</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">Паскаль</string>
+    <string name="conv_unit_kilopascal">Кілопаскаль</string>
+    <string name="conv_unit_bar">Бар</string>
+    <string name="conv_unit_atmosphere">Атмосфера</string>
+    <string name="conv_unit_psi">Фунт на квадратний дюйм</string>
+    <string name="conv_unit_mmhg">Міліметр ртутного стовпа</string>
+</resources>

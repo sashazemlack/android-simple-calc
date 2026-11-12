@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Both apps (Offline and Exchange) share the name. -->
+    <string name="app_name">Kalkulačka</string>
+    <string name="tab_calculator">Kalkulačka</string>
+    <string name="tab_converter">Převodník</string>
+
+    <string name="settings">Nastavení</string>
+    <string name="settings_theme">Motiv</string>
+    <string name="settings_about">O aplikaci</string>
+    <string name="theme_system">Systém</string>
+    <string name="theme_light">Světlý</string>
+    <string name="theme_dark">Tmavý</string>
+    <string name="close">Zavřít</string>
+    <string name="about_description">Jednoduchá kalkulačka pro Android s minimem závislostí a oprávnění, šířená pod licencí MIT</string>
+    <string name="settings_git_project">Projekt na Gitu</string>
+    <string name="settings_link_failed">Odkaz nelze otevřít v žádné aplikaci.</string>
+    <string name="settings_save_failed">Motiv se nepodařilo uložit. Zkontrolujte, zda není úložiště plné.</string>
+
+    <!-- Shared amount keypad (unit converter and currency converter): accessibility labels. -->
+    <string name="keypad_toggle_sign">Změnit znaménko</string>
+    <string name="keypad_double_zero">Dvě nuly</string>
+    <string name="keypad_decimal">Desetinný oddělovač</string>
+    <string name="keypad_clear">Vymazat</string>
+    <string name="keypad_backspace">Smazat znak</string>
+
+    <!-- Shared list picker (units, currencies). -->
+    <string name="picker_search">Hledat</string>
+    <string name="picker_no_matches">Žádné výsledky</string>
+    <string name="picker_clear_search">Vymazat hledání</string>
+</resources>

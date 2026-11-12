@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">De</string>
+    <string name="exch_to">A</string>
+    <string name="exch_swap">Intercambiar</string>
+    <string name="exch_swap_description">Intercambiar divisas</string>
+    <string name="exch_pick_from">Convertir de</string>
+    <string name="exch_pick_to">Convertir a</string>
+    <string name="exch_search_placeholder">Buscar divisa o código</string>
+    <string name="exch_search_empty">No se encontraron divisas</string>
+    <!-- %1$s = formatted amount, %2$s = currency name, e.g. "Importe: 12,5 Euro" -->
+    <string name="exch_amount_description">Importe: %1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name -->
+    <string name="exch_result_description">Importe convertido: %1$s %2$s</string>
+    <string name="exch_result_unavailable">Importe convertido no disponible</string>
+    <!-- %1$s = data source -->
+    <string name="exch_attribution">%1$s · tipos cruzados calculados en el dispositivo</string>
+    <!-- Compact layout: both unit rates on one line -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- %1$s = rate line, e.g. "1 EUR = 1,9949 ANG", %2$s = date of that rate, e.g. "11 nov 2026" -->
+    <string name="exch_rate_dated">%1$s (del %2$s)</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">Actualizando tipos de cambio</string>
+    <string name="exch_refresh_action">Actualizar tipos de cambio</string>
+    <string name="exch_feedback_updated">Tipos de cambio actualizados</string>
+    <string name="exch_feedback_failed">No se pudieron actualizar los tipos de cambio</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">Cargando tipos de cambio…</string>
+    <string name="exch_status_refreshing">Actualizando tipos de cambio…</string>
+    <!-- %1$s = download date and time -->
+    <string name="exch_status_fresh">Tipos de cambio actualizados: %1$s</string>
+    <string name="exch_status_cached">Usando tipos guardados · Última actualización: %1$s</string>
+    <string name="exch_status_stale">Usando tipos guardados (pueden estar desactualizados) · Última actualización: %1$s</string>
+    <string name="exch_status_unavailable">Tipos de cambio no disponibles. Desliza hacia abajo para volver a intentarlo.</string>
+    <string name="exch_status_last_updated">Última actualización: %1$s</string>
+    <!-- %1$s = newest date of the downloaded rates, e.g. "12 nov 2026" -->
+    <string name="exch_status_rate_date">Tipos de cambio del %1$s</string>
+    <!-- Same for rates published by the European Central Bank (BCE in Spanish) -->
+    <string name="exch_status_rate_date_ecb">Tipos de referencia del BCE del %1$s</string>
+    <string name="exch_status_update_failed">Error al actualizar. Desliza hacia abajo para volver a intentarlo.</string>
+    <!-- Joins two parts of the status detail line -->
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">No hay conexión a Internet.</string>
+    <string name="exch_error_server">El servicio de tipos de cambio no está disponible en este momento.</string>
+    <string name="exch_error_invalid_data">El servicio de tipos de cambio devolvió datos no válidos.</string>
+    <!-- Data sources (shown before the attribution suffix). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">Fuente: tipos de bancos centrales y otros tipos oficiales, combinados por frankfurter.dev</string>
+    <string name="exch_source_frankfurter">Fuente: Banco Central Europeo vía frankfurter.dev</string>
+    <string name="exch_source_ecb">Fuente: Banco Central Europeo</string>
+</resources>

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Exchange Rate screen (Exchange flavor only) -->
+    <string name="exch_from">De</string>
+    <string name="exch_to">Vers</string>
+    <string name="exch_swap">Inverser</string>
+    <string name="exch_swap_description">Inverser les devises</string>
+    <string name="exch_pick_from">Convertir de</string>
+    <string name="exch_pick_to">Convertir en</string>
+    <string name="exch_search_placeholder">Rechercher une devise ou un code</string>
+    <string name="exch_search_empty">Aucune devise correspondante</string>
+    <!-- %1$s = formatted amount, %2$s = currency name -->
+    <string name="exch_amount_description">Montant : %1$s %2$s</string>
+    <!-- %1$s = formatted converted amount, %2$s = currency name -->
+    <string name="exch_result_description">Montant converti : %1$s %2$s</string>
+    <string name="exch_result_unavailable">Montant converti non disponible</string>
+    <!-- %1$s = data source -->
+    <string name="exch_attribution">%1$s · taux croisés calculés sur l\'appareil</string>
+    <!-- Compact layout: both unit rates on one line -->
+    <string name="exch_rate_pair">%1$s · %2$s</string>
+    <!-- %1$s = rate line, %2$s = date of that rate ("au 11 nov. 2026") -->
+    <string name="exch_rate_dated">%1$s (au %2$s)</string>
+
+    <!-- Pull-to-refresh and manual refresh -->
+    <string name="exch_refreshing_indicator">Actualisation des taux de change</string>
+    <string name="exch_refresh_action">Actualiser les taux de change</string>
+    <string name="exch_feedback_updated">Taux de change mis à jour</string>
+    <string name="exch_feedback_failed">Impossible d\'actualiser les taux de change</string>
+
+    <!-- Status block above the keypad. Templates receive one formatted date or time as %1$s. -->
+    <string name="exch_status_loading">Chargement des taux de change…</string>
+    <string name="exch_status_refreshing">Actualisation des taux de change…</string>
+    <string name="exch_status_fresh">Dernière mise à jour des taux : %1$s</string>
+    <string name="exch_status_cached">Taux en cache · Dernière mise à jour : %1$s</string>
+    <string name="exch_status_stale">Taux en cache (peut-être obsolètes) · Dernière mise à jour : %1$s</string>
+    <string name="exch_status_unavailable">Taux de change non disponibles. Balayez vers le bas pour réessayer.</string>
+    <string name="exch_status_last_updated">Dernière mise à jour : %1$s</string>
+    <!-- %1$s = newest date of the downloaded rates -->
+    <string name="exch_status_rate_date">Taux de change du %1$s</string>
+    <!-- Same for rates published by the European Central Bank (fallback source) -->
+    <string name="exch_status_rate_date_ecb">Cours de référence de la BCE du %1$s</string>
+    <string name="exch_status_update_failed">Échec de la mise à jour. Balayez vers le bas pour réessayer.</string>
+    <string name="exch_status_joined">%1$s · %2$s</string>
+    <string name="exch_error_no_connection">Aucune connexion Internet.</string>
+    <string name="exch_error_server">Le service de taux de change est momentanément indisponible.</string>
+    <string name="exch_error_invalid_data">Le service de taux de change a renvoyé des données non valides.</string>
+    <!-- Data sources (shown before the attribution suffix). Keep "frankfurter.dev" as is. -->
+    <string name="exch_source_frankfurter_blended">Source : taux de banques centrales et d\'autres sources officielles, agrégés par frankfurter.dev</string>
+    <string name="exch_source_frankfurter">Source : Banque centrale européenne via frankfurter.dev</string>
+    <string name="exch_source_ecb">Source : Banque centrale européenne</string>
+</resources>

@@ -225,13 +225,59 @@ internal fun ScientificSlot(
     }
 }
 
+/** One cell of the scientific keypad. */
+internal sealed interface SciCell {
+    data class Key(val spec: KeySpec) : SciCell
+    data object Inverse : SciCell
+    data class Angle(val mode: AngleMode) : SciCell
+}
+
 /**
- * The scientific keypad: 5 columns x 3 rows of function keys.
+ * Arrangement of the 15 scientific keys.
+ *
+ * Portrait, 5 columns x 3 rows above the standard keypad:
  * ```
- * | sin | cos | tan | log | ln |      inverse: sin⁻¹ cos⁻¹ tan⁻¹ 10ˣ eˣ
- * | (   | )   | ^   | √   | !  |
+ * | sin | cos | tan | log | ln  |      inverse: sin⁻¹ cos⁻¹ tan⁻¹ 10ˣ eˣ
+ * | (   | )   | ^   | √   | !   |
  * | π   | e   | inv | RAD | DEG |      the active angle unit is highlighted like inv
  * ```
+ * Compact landscape, 3 columns x 5 rows beside the standard keypad, one row per standard row:
+ * ```
+ * | inv | RAD | DEG |
+ * | sin | cos | tan |
+ * | ln  | log | !   |
+ * | π   | e   | ^   |
+ * | (   | )   | √   |
+ * ```
+ */
+internal fun scientificRows(inverse: Boolean, landscape: Boolean): List<List<SciCell>> {
+    val (sin, cos, tan, log, ln) = functionRow(inverse).map { SciCell.Key(it) }
+    val (open, close, power, root, factorial) = SecondRow.map { SciCell.Key(it) }
+    val (pi, euler) = ThirdRowConstants.map { SciCell.Key(it) }
+    val rad = SciCell.Angle(AngleMode.RAD)
+    val deg = SciCell.Angle(AngleMode.DEG)
+    return if (landscape) {
+        listOf(
+            listOf(SciCell.Inverse, rad, deg),
+            listOf(sin, cos, tan),
+            listOf(ln, log, factorial),
+            listOf(pi, euler, power),
+            listOf(open, close, root),
+        )
+    } else {
+        listOf(
+            listOf(sin, cos, tan, log, ln),
+            listOf(open, close, power, root, factorial),
+            listOf(pi, euler, SciCell.Inverse, rad, deg),
+        )
+    }
+}
+
+/**
+ * The scientific keypad, filling its bounds: 5 x 3 in portrait (inside the expandable slot) or
+ * 3 x 5 in compact [landscape], where it sits left of the standard keypad. In landscape the
+ * keypad has no right padding: the standard keypad's own padding provides that gap, so the two
+ * blocks are separated by one key gap and their rows line up.
  */
 @Composable
 internal fun ScientificKeypad(
@@ -239,39 +285,44 @@ internal fun ScientificKeypad(
     angleMode: AngleMode,
     onKey: (CalcKey) -> Unit,
     modifier: Modifier = Modifier,
+    landscape: Boolean = false,
 ) {
     val gap = FluentDimens.keyGap
     val keyStyle = FluentTheme.typography.keySmall
-    val cell = Modifier.fillMaxHeight()
+    val inverseState = stringResource(if (inverse) R.string.calc_state_on else R.string.calc_state_off)
     Column(
         modifier
             .fillMaxSize()
             .background(FluentTheme.colors.keypadGap)
-            .padding(start = gap, top = gap, end = gap),
+            .then(
+                if (landscape) {
+                    Modifier.padding(start = gap, top = gap, bottom = gap)
+                } else {
+                    Modifier.padding(start = gap, top = gap, end = gap)
+                },
+            ),
         verticalArrangement = Arrangement.spacedBy(gap),
     ) {
-        val rowModifier = Modifier.weight(1f).fillMaxWidth()
-        Row(rowModifier, horizontalArrangement = Arrangement.spacedBy(gap)) {
-            functionRow(inverse).forEach { spec -> KeyCell(spec, onKey, cell.weight(1f), style = keyStyle) }
-        }
-        Row(rowModifier, horizontalArrangement = Arrangement.spacedBy(gap)) {
-            SecondRow.forEach { spec -> KeyCell(spec, onKey, cell.weight(1f), style = keyStyle) }
-        }
-        Row(rowModifier, horizontalArrangement = Arrangement.spacedBy(gap)) {
-            ThirdRowConstants.forEach { spec -> KeyCell(spec, onKey, cell.weight(1f), style = keyStyle) }
-            val inverseState = stringResource(if (inverse) R.string.calc_state_on else R.string.calc_state_off)
-            KeyCell(
-                spec = InverseKey,
-                onKey = onKey,
-                modifier = cell.weight(1f).semantics {
-                    selected = inverse
-                    stateDescription = inverseState
-                },
-                style = keyStyle,
-                selected = inverse,
-            )
-            AngleKey(AngleMode.RAD, angleMode, onKey, cell.weight(1f), keyStyle)
-            AngleKey(AngleMode.DEG, angleMode, onKey, cell.weight(1f), keyStyle)
+        scientificRows(inverse, landscape).forEach { row ->
+            Row(Modifier.weight(1f).fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(gap)) {
+                row.forEach { cell ->
+                    val cellModifier = Modifier.weight(1f).fillMaxHeight()
+                    when (cell) {
+                        is SciCell.Key -> KeyCell(cell.spec, onKey, cellModifier, style = keyStyle)
+                        SciCell.Inverse -> KeyCell(
+                            spec = InverseKey,
+                            onKey = onKey,
+                            modifier = cellModifier.semantics {
+                                selected = inverse
+                                stateDescription = inverseState
+                            },
+                            style = keyStyle,
+                            selected = inverse,
+                        )
+                        is SciCell.Angle -> AngleKey(cell.mode, angleMode, onKey, cellModifier, keyStyle)
+                    }
+                }
+            }
         }
     }
 }

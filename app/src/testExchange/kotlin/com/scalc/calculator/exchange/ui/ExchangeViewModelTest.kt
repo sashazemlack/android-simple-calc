@@ -13,10 +13,11 @@ import com.scalc.calculator.exchange.data.FetchResult
 import com.scalc.calculator.exchange.data.InMemoryDataStore
 import com.scalc.calculator.exchange.model.Currency
 import com.scalc.calculator.exchange.model.RateSourceKind
-import com.scalc.calculator.exchange.model.RateStatusStrings
+import com.scalc.calculator.exchange.model.RateStatusInfo
 import com.scalc.calculator.exchange.model.RateTable
 import com.scalc.calculator.exchange.model.SampleRates
 import com.scalc.calculator.exchange.model.StatusKind
+import com.scalc.calculator.exchange.model.TestStrings
 import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -40,6 +41,8 @@ import org.junit.Test
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.math.BigDecimal
+import java.util.Locale
+import java.util.TimeZone
 
 /**
  * [ExchangeViewModel] on a real [ExchangeRepository] (in-memory DataStore, fake rates client).
@@ -113,6 +116,13 @@ class ExchangeViewModelTest {
 
     private val ExchangeViewModel.ui: ExchangeUiState get() = state.value
 
+    private val english = ExchangeLocalization(Locale.ENGLISH, TestStrings.ENGLISH)
+    private val german = ExchangeLocalization(Locale.GERMAN, TestStrings.GERMAN)
+
+    /** The texts the screen shows for the current state in [localization] (UTC times). */
+    private fun ExchangeViewModel.texts(localization: ExchangeLocalization = english): LocalizedExchangeTexts =
+        ui.localize(localization, TimeZone.getTimeZone("UTC"))
+
     // --- Initial state and status --------------------------------------------------------------
 
     @Test
@@ -152,7 +162,7 @@ class ExchangeViewModelTest {
     fun statusIsFreshAfterRefreshAndCachedAfterAFailedRefresh() = runTest {
         val viewModel = newViewModelWithRates()
         assertEquals(StatusKind.Fresh, viewModel.ui.status.kind)
-        assertTrue(viewModel.ui.status.text.startsWith("Rates last updated: "))
+        assertTrue(viewModel.texts().status.text.startsWith("Rates last updated: "))
         assertTrue(viewModel.ui.ratesAvailable)
 
         client.handler = { throw IOException("offline") }
@@ -160,10 +170,10 @@ class ExchangeViewModelTest {
         viewModel.refresh()
         runCurrent()
 
-        val status = viewModel.ui.status
+        val status = viewModel.texts().status
         assertEquals(StatusKind.Cached, status.kind)
         assertTrue(status.text.startsWith("Using cached rates"))
-        assertTrue(status.detail!!.endsWith(RateStatusStrings().updateFailed))
+        assertTrue(status.detail!!.endsWith(TestStrings.ENGLISH.updateFailed))
         // Cached rates keep converting.
         assertEquals("1.11", viewModel.ui.convertedText)
     }
@@ -176,7 +186,7 @@ class ExchangeViewModelTest {
         runCurrent()
 
         assertEquals(StatusKind.Unavailable, viewModel.ui.status.kind)
-        assertEquals(RateStatusStrings().errorNoConnection, viewModel.ui.status.detail)
+        assertEquals("No internet connection.", viewModel.texts().status.detail)
         assertEquals(ExchangeFormatting.UNAVAILABLE, viewModel.ui.convertedText)
     }
 
@@ -365,6 +375,65 @@ class ExchangeViewModelTest {
         advanceTimeBy(10 * minute)
         observe(viewModel)
         assertEquals("17", viewModel.ui.amountText)
+    }
+
+    // --- Language ------------------------------------------------------------------------------
+
+    @Test
+    fun stateHoldsNoTextSoASystemLanguageChangeTakesEffectImmediately() = runTest {
+        val viewModel = newViewModelWithRates()
+        client.handler = { throw IOException("offline") }
+        viewModel.refresh()
+        runCurrent()
+        val ui = viewModel.ui
+        // English names and a status without text: nothing language-dependent is cached.
+        assertEquals(Currency("USD", "US Dollar"), ui.to)
+        assertEquals(
+            RateStatusInfo(StatusKind.Cached, fetchedAtMillis = t0, rateDate = SampleRates.RATE_DATE, source = RateSourceKind.FRANKFURTER_BLENDED, updateFailed = true),
+            ui.status,
+        )
+
+        val before = viewModel.texts(english)
+        assertEquals("Euro", before.fromName)
+        assertEquals("US Dollar", before.toName)
+        assertEquals("Using cached rates · Last updated: 6 Nov 2026, 21:20", before.status.text)
+        assertEquals("Exchange rates of 10 Nov 2026 · Update failed. Swipe down to retry.", before.status.detail)
+        assertEquals("Source: central bank and other official rates blended by frankfurter.dev", before.status.attribution)
+
+        // The system language changes: the activity is recreated, this ViewModel survives and the
+        // screen localizes the very same state with the new configuration.
+        val after = viewModel.texts(german)
+        assertEquals("US-Dollar", after.toName)
+        assertEquals("Gespeicherte Kurse · Zuletzt aktualisiert: 6 Nov. 2026, 21:20", after.status.text)
+        assertEquals("Wechselkurse vom 10 Nov. 2026 · Aktualisierung fehlgeschlagen.", after.status.detail)
+        assertEquals(TestStrings.GERMAN.sourceFrankfurterBlended, after.status.attribution)
+        assertEquals("米ドル", viewModel.texts(ExchangeLocalization(Locale.JAPANESE, TestStrings.ENGLISH)).toName)
+        // The ViewModel itself did not change.
+        assertEquals(ui, viewModel.ui)
+    }
+
+    @Test
+    fun olderPairRatesCarryTheirOwnDate() = runTest {
+        val table = SampleRates.table(rateDate = "2026-11-12", rateDates = mapOf("PLN" to "2026-11-11", "JPY" to "2026-11-10"))
+        client.handler = { FetchResult.Downloaded(table, null) }
+        val viewModel = newViewModelWithRates()
+        // EUR -> USD: both of the newest date, only the status block shows it.
+        assertNull(viewModel.ui.pairRateDate)
+        assertNull(viewModel.texts().pairRateDate)
+        assertEquals("Exchange rates of 12 Nov 2026", viewModel.texts().status.detail)
+
+        viewModel.selectTo("PLN")
+        runCurrent()
+        assertEquals("2026-11-11", viewModel.ui.pairRateDate)
+        assertEquals("11 Nov 2026", viewModel.texts().pairRateDate)
+        assertEquals("11 Nov. 2026", viewModel.texts(german).pairRateDate)
+
+        // The older of both dates.
+        viewModel.selectFrom("JPY")
+        runCurrent()
+        assertEquals("2026-11-10", viewModel.ui.pairRateDate)
+        // The status block keeps the newest date.
+        assertEquals("Exchange rates of 12 Nov 2026", viewModel.texts().status.detail)
     }
 
     // --- Currency list -------------------------------------------------------------------------

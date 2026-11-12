@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Display -->
+    <string name="calc_mode_deg">DEG</string>
+    <string name="calc_mode_rad">RAD</string>
+    <string name="calc_mode_inverse">INV</string>
+    <!-- %1$s = expression as shown, e.g. "125+25×2" -->
+    <string name="calc_expression_description">Expresión: %1$s</string>
+    <!-- %1$s = live result, e.g. "175" -->
+    <string name="calc_result_description">Resultado: %1$s</string>
+
+    <!-- Action row and clipboard feedback -->
+    <string name="calc_history">Historial</string>
+    <string name="calc_paste">Pegar</string>
+    <string name="calc_copy">Copiar</string>
+    <string name="calc_copied">Copiado</string>
+    <string name="calc_nothing_to_copy">No hay nada que copiar</string>
+    <string name="calc_pasted">Pegado</string>
+    <string name="calc_clipboard_empty">El portapapeles está vacío</string>
+    <string name="calc_clipboard_invalid">El portapapeles no contiene una expresión válida</string>
+    <string name="calc_clipboard_too_long">La expresión es demasiado larga para pegarla</string>
+    <string name="calc_clipboard_unavailable">El portapapeles no está disponible</string>
+    <string name="calc_clip_label">Resultado del cálculo</string>
+
+    <!-- Evaluation errors (live result line and failed "=") -->
+    <string name="calc_error_incomplete">Expresión incompleta</string>
+    <string name="calc_error_syntax">Expresión no válida</string>
+    <string name="calc_error_division_by_zero">No se puede dividir entre cero</string>
+    <string name="calc_error_domain">Entrada no válida para esta función</string>
+    <string name="calc_error_invalid_factorial">El factorial requiere un número entero ≥ 0</string>
+    <string name="calc_error_overflow">El resultado es demasiado grande</string>
+
+    <!-- Scientific keypad expander -->
+    <string name="calc_scientific_functions">Funciones científicas</string>
+    <string name="calc_state_expanded">Expandido</string>
+    <string name="calc_state_collapsed">Contraído</string>
+    <string name="calc_state_on">Activado</string>
+    <string name="calc_state_off">Desactivado</string>
+
+    <!-- Key descriptions for accessibility -->
+    <string name="calc_key_clear">Borrar</string>
+    <string name="calc_key_percent">Porcentaje</string>
+    <string name="calc_key_backspace">Retroceso</string>
+    <string name="calc_key_divide">Dividir</string>
+    <string name="calc_key_multiply">Multiplicar</string>
+    <string name="calc_key_minus">Menos</string>
+    <string name="calc_key_plus">Más</string>
+    <string name="calc_key_toggle_sign">Cambiar signo</string>
+    <string name="calc_key_decimal">Separador decimal</string>
+    <string name="calc_key_equals">Igual</string>
+    <string name="calc_key_sin">Seno</string>
+    <string name="calc_key_cos">Coseno</string>
+    <string name="calc_key_tan">Tangente</string>
+    <string name="calc_key_asin">Seno inverso</string>
+    <string name="calc_key_acos">Coseno inverso</string>
+    <string name="calc_key_atan">Tangente inversa</string>
+    <string name="calc_key_log">Logaritmo decimal</string>
+    <string name="calc_key_ln">Logaritmo natural</string>
+    <string name="calc_key_pow10">Diez elevado a</string>
+    <string name="calc_key_exp">e elevado a</string>
+    <string name="calc_key_open_parenthesis">Abrir paréntesis</string>
+    <string name="calc_key_close_parenthesis">Cerrar paréntesis</string>
+    <string name="calc_key_power">Potencia</string>
+    <string name="calc_key_sqrt">Raíz cuadrada</string>
+    <string name="calc_key_factorial">Factorial</string>
+    <string name="calc_key_pi">Pi</string>
+    <string name="calc_key_euler">Número de Euler</string>
+    <string name="calc_key_inverse">Funciones inversas</string>
+    <string name="calc_angle_degrees">Grados</string>
+    <string name="calc_angle_radians">Radianes</string>
+
+    <!-- History panel -->
+    <string name="calc_history_title">Historial</string>
+    <plurals name="calc_history_count">
+        <item quantity="one">%d cálculo</item>
+        <item quantity="many">%d cálculos</item>
+        <item quantity="other">%d cálculos</item>
+    </plurals>
+    <string name="calc_history_clear">Borrar</string>
+    <string name="calc_history_clear_description">Borrar historial</string>
+    <string name="calc_history_back">Volver al teclado</string>
+    <string name="calc_history_empty">Aún no hay cálculos.\nLos resultados aparecerán aquí al tocar =.</string>
+    <string name="calc_history_cleared">Historial borrado</string>
+    <string name="calc_history_restore">Usar este cálculo</string>
+    <string name="calc_history_storage_failed">No se pudo guardar el historial</string>
+</resources>

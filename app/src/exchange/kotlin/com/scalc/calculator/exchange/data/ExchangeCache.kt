@@ -30,15 +30,20 @@ data class ExchangeCache(
  * Compact versioned binary format for [ExchangeCache] (no JSON dependency), in this order:
  *
  * ```
- * int version
+ * int version (2)
  * boolean hasTable
- *   UTF rateDate, long fetchedAtMillis, UTF source,
- *   int rateCount, rateCount × (UTF code, UTF rate as BigDecimal.toString()),
- *   int nameCount, nameCount × (UTF code, UTF name)
+ *   UTF rateDate (newest), long fetchedAtMillis, UTF source,
+ *   int rateCount, rateCount × (UTF code, UTF rate as BigDecimal.toString(), UTF rate date),
+ *   int nameCount, nameCount × (UTF code, UTF English name)
  * boolean hasEtag, [UTF etag]
  * long lastAutoAttemptMillis, long lastSuccessMillis
  * UTF selectedFrom, UTF selectedTo
  * ```
+ *
+ * Version 1 (written by earlier app versions) is still read: it has no per-currency rate dates,
+ * so its single rate date applies to every currency. Its ETag is dropped, because it validated
+ * the ECB-only feed those versions downloaded; the next refresh then downloads the current feed
+ * in full. Refresh timestamps and the selection are kept.
  *
  * Rates are stored as decimal strings, so they round-trip exactly. Anything unreadable or
  * inconsistent raises [CorruptionException]; the DataStore's corruption handler then starts over
@@ -46,7 +51,12 @@ data class ExchangeCache(
  */
 object ExchangeCacheSerializer : Serializer<ExchangeCache> {
 
-    private const val VERSION = 1
+    /** Format written by this version. */
+    const val VERSION = 2
+
+    /** Format of earlier app versions: one rate date for the whole table. */
+    const val VERSION_SINGLE_RATE_DATE = 1
+
     private const val MAX_ENTRIES = 1_000
 
     override val defaultValue: ExchangeCache = ExchangeCache()
@@ -55,13 +65,16 @@ object ExchangeCacheSerializer : Serializer<ExchangeCache> {
         try {
             val data = DataInputStream(input)
             val version = data.readInt()
-            if (version != VERSION) throw CorruptionException("Unsupported exchange cache version $version")
-            val table = if (data.readBoolean()) readTable(data) else null
+            if (version != VERSION && version != VERSION_SINGLE_RATE_DATE) {
+                throw CorruptionException("Unsupported exchange cache version $version")
+            }
+            val table = if (data.readBoolean()) readTable(data, perRateDates = version == VERSION) else null
             val etag = if (data.readBoolean()) data.readUTF() else null
             val lastAutoAttempt = data.readLong()
             val lastSuccess = data.readLong()
             val (from, to) = CurrencySelection.sanitize(data.readUTF(), data.readUTF(), table)
-            return ExchangeCache(table, etag, lastAutoAttempt, lastSuccess, from, to)
+            val validEtag = etag.takeIf { version == VERSION }
+            return ExchangeCache(table, validEtag, lastAutoAttempt, lastSuccess, from, to)
         } catch (e: CorruptionException) {
             throw e
         } catch (e: IOException) {
@@ -82,6 +95,7 @@ object ExchangeCacheSerializer : Serializer<ExchangeCache> {
             table.rates.forEach { (code, rate) ->
                 data.writeUTF(code)
                 data.writeUTF(rate.toString())
+                data.writeUTF(table.rateDateOf(code) ?: table.rateDate)
             }
             data.writeInt(table.currencies.size)
             table.currencies.forEach {
@@ -98,22 +112,25 @@ object ExchangeCacheSerializer : Serializer<ExchangeCache> {
         data.flush()
     }
 
-    private fun readTable(data: DataInputStream): RateTable {
+    private fun readTable(data: DataInputStream, perRateDates: Boolean): RateTable {
         val rateDate = data.readUTF()
+        if (!RateTable.isValidRateDate(rateDate)) throw CorruptionException("Invalid rate date $rateDate")
         val fetchedAt = data.readLong()
         val sourceName = data.readUTF()
         val source = RateSourceKind.entries.firstOrNull { it.name == sourceName }
             ?: throw CorruptionException("Unknown rate source $sourceName")
         val rateCount = readCount(data)
         val rates = LinkedHashMap<String, BigDecimal>(rateCount)
+        val dates = HashMap<String, String>(rateCount)
         repeat(rateCount) {
             val code = data.readUTF()
             rates[code] = data.readUTF().toBigDecimalOrNull() ?: throw CorruptionException("Invalid rate for $code")
+            dates[code] = if (perRateDates) data.readUTF() else rateDate
         }
         val nameCount = readCount(data)
         val names = HashMap<String, String>(nameCount)
         repeat(nameCount) { names[data.readUTF()] = data.readUTF() }
-        return RateTable.create(rates, rateDate, names, source, fetchedAt)
+        return RateTable.create(rates, dates, names, source, fetchedAt)
             ?: throw CorruptionException("Invalid cached rate table")
     }
 

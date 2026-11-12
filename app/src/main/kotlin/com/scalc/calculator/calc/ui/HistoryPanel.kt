@@ -1,5 +1,6 @@
 package com.scalc.calculator.calc.ui
 
+import android.text.format.DateFormat
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
@@ -41,9 +44,11 @@ import com.scalc.calculator.ui.theme.FluentDimens
 import com.scalc.calculator.ui.theme.FluentTheme
 import java.text.SimpleDateFormat
 import java.util.Date
-import java.util.Locale
 
+/** Fallback when the platform has no pattern for the skeletons below. */
 private const val TIMESTAMP_PATTERN = "d MMM yyyy, HH:mm"
+private const val TIMESTAMP_SKELETON_24H = "dMMMyyyyHHmm"
+private const val TIMESTAMP_SKELETON_12H = "dMMMyyyyhmma"
 
 /**
  * History panel shown in place of the keypads: header with title, entry count, Clear and a
@@ -71,7 +76,15 @@ internal fun HistoryPanel(
                 )
             }
         } else {
-            val formatter = remember { SimpleDateFormat(TIMESTAMP_PATTERN, Locale.getDefault()) }
+            // Date and time in the system language's own order and the system 12/24-hour setting
+            // ("11 Nov 2026, 22:54", "2026年11月11日 22:54", "Nov 11, 2026, 10:54 PM").
+            val context = LocalContext.current
+            val locale = LocalConfiguration.current.locales[0]
+            val is24Hour = DateFormat.is24HourFormat(context)
+            val formatter = remember(locale, is24Hour) {
+                val skeleton = if (is24Hour) TIMESTAMP_SKELETON_24H else TIMESTAMP_SKELETON_12H
+                SimpleDateFormat(DateFormat.getBestDateTimePattern(locale, skeleton) ?: TIMESTAMP_PATTERN, locale)
+            }
             LazyColumn(Modifier.fillMaxSize()) {
                 items(entries) { entry ->
                     HistoryRow(entry, timestamp = formatter.format(Date(entry.timestamp)), onClick = { onRestore(entry) })

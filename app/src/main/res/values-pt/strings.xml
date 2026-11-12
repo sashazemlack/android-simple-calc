@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Both apps (Offline and Exchange) share the name. -->
+    <string name="app_name">Calculadora</string>
+    <string name="tab_calculator">Calculadora</string>
+    <string name="tab_converter">Conversor</string>
+
+    <string name="settings">Definições</string>
+    <string name="settings_theme">Tema</string>
+    <string name="settings_about">Acerca de</string>
+    <string name="theme_system">Sistema</string>
+    <string name="theme_light">Claro</string>
+    <string name="theme_dark">Escuro</string>
+    <string name="close">Fechar</string>
+    <string name="about_description">Aplicação de calculadora simples para Android, com o mínimo de dependências e permissões, distribuída sob a licença MIT</string>
+    <string name="settings_git_project">Projeto Git</string>
+    <string name="settings_link_failed">Nenhuma aplicação consegue abrir a ligação.</string>
+    <string name="settings_save_failed">Não foi possível guardar o tema. Verifique se o armazenamento não está cheio.</string>
+
+    <!-- Shared amount keypad (unit converter and currency converter): accessibility labels. -->
+    <string name="keypad_toggle_sign">Inverter sinal</string>
+    <string name="keypad_double_zero">Duplo zero</string>
+    <string name="keypad_decimal">Separador decimal</string>
+    <string name="keypad_clear">Limpar</string>
+    <string name="keypad_backspace">Retrocesso</string>
+
+    <!-- Shared list picker (units, currencies). -->
+    <string name="picker_search">Pesquisar</string>
+    <string name="picker_no_matches">Sem resultados</string>
+    <string name="picker_clear_search">Limpar pesquisa</string>
+</resources>

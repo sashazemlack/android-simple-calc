@@ -25,6 +25,24 @@ class PickerFilterTest {
     }
 
     @Test
+    fun searchAlsoMatchesKeywords() {
+        // Localized subtitle, English name as a hidden keyword.
+        val usd = PickerItem("USD", "USD", "US-Dollar", keywords = listOf("United States Dollar"))
+        val czk = PickerItem("CZK", "CZK", "Tschechische Krone", keywords = listOf("Czech Koruna"))
+        val all = listOf(usd, czk, pln)
+        fun search(query: String) = filterPickerItems(all, query).map { it.key }
+
+        assertEquals(listOf("USD"), search("united states"))
+        assertEquals(listOf("USD"), search("us-dollar"))
+        assertEquals(listOf("CZK"), search("czech"))
+        assertEquals(listOf("CZK"), search("tschechische"))
+        assertEquals(listOf("CZK"), search("KORUNA"))
+        assertEquals(listOf("USD", "PLN"), search("ol"))
+        // Items without keywords behave as before.
+        assertEquals(emptyList<String>(), pln.keywords)
+    }
+
+    @Test
     fun blankQueryReturnsEverythingAndUnknownNothing() {
         assertEquals(listOf("PLN", "ISK", "SEK"), keys("  "))
         assertEquals(listOf("PLN", "ISK", "SEK"), keys(""))

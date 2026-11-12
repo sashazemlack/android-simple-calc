@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Unit converter screen -->
+    <string name="conv_back">カテゴリに戻る</string>
+    <string name="conv_from">変換元</string>
+    <string name="conv_to">変換先</string>
+    <string name="conv_pick_from">変換元の単位</string>
+    <string name="conv_pick_to">変換先の単位</string>
+    <string name="conv_swap">入れ替え</string>
+    <string name="conv_swap_description">単位を入れ替え</string>
+    <string name="conv_last_used">前回使用</string>
+    <string name="conv_below_absolute_zero">絶対零度（0 K）未満です</string>
+    <!-- %1$s = formatted number, %2$s = unit name, e.g. "Amount: 12.5 Meter" -->
+    <string name="conv_amount_description">入力値：%1$s %2$s</string>
+    <string name="conv_result_description">結果：%1$s %2$s</string>
+
+    <!-- Categories -->
+    <string name="conv_category_length">長さ</string>
+    <string name="conv_category_area">面積</string>
+    <string name="conv_category_volume">体積</string>
+    <string name="conv_category_speed">速度</string>
+    <string name="conv_category_mass">重量 / 質量</string>
+    <string name="conv_category_temperature">温度</string>
+    <string name="conv_category_power">仕事率</string>
+    <string name="conv_category_pressure">圧力</string>
+
+    <!-- Length -->
+    <string name="conv_unit_millimeter">ミリメートル</string>
+    <string name="conv_unit_centimeter">センチメートル</string>
+    <string name="conv_unit_meter">メートル</string>
+    <string name="conv_unit_kilometer">キロメートル</string>
+    <string name="conv_unit_inch">インチ</string>
+    <string name="conv_unit_foot">フィート</string>
+    <string name="conv_unit_yard">ヤード</string>
+    <string name="conv_unit_mile">マイル</string>
+
+    <!-- Area -->
+    <string name="conv_unit_square_meter">平方メートル</string>
+    <string name="conv_unit_square_kilometer">平方キロメートル</string>
+    <string name="conv_unit_hectare">ヘクタール</string>
+    <string name="conv_unit_acre">エーカー</string>
+    <string name="conv_unit_square_foot">平方フィート</string>
+    <string name="conv_unit_square_mile">平方マイル</string>
+
+    <!-- Volume -->
+    <string name="conv_unit_milliliter">ミリリットル</string>
+    <string name="conv_unit_liter">リットル</string>
+    <string name="conv_unit_cubic_meter">立方メートル</string>
+    <string name="conv_unit_us_gallon">米ガロン</string>
+    <string name="conv_unit_us_quart">米クォート</string>
+    <string name="conv_unit_us_fluid_ounce">米液量オンス</string>
+    <string name="conv_unit_us_cup">米カップ</string>
+
+    <!-- Speed -->
+    <string name="conv_unit_meter_per_second">メートル毎秒</string>
+    <string name="conv_unit_kilometer_per_hour">キロメートル毎時</string>
+    <string name="conv_unit_mile_per_hour">マイル毎時</string>
+    <string name="conv_unit_foot_per_second">フィート毎秒</string>
+    <string name="conv_unit_knot">ノット</string>
+
+    <!-- Weight / mass -->
+    <string name="conv_unit_milligram">ミリグラム</string>
+    <string name="conv_unit_gram">グラム</string>
+    <string name="conv_unit_kilogram">キログラム</string>
+    <string name="conv_unit_tonne">トン</string>
+    <string name="conv_unit_ounce">オンス</string>
+    <string name="conv_unit_pound">ポンド</string>
+
+    <!-- Temperature -->
+    <string name="conv_unit_celsius">摂氏</string>
+    <string name="conv_unit_fahrenheit">華氏</string>
+    <string name="conv_unit_kelvin">ケルビン</string>
+
+    <!-- Power -->
+    <string name="conv_unit_watt">ワット</string>
+    <string name="conv_unit_kilowatt">キロワット</string>
+    <string name="conv_unit_megawatt">メガワット</string>
+    <string name="conv_unit_metric_horsepower">仏馬力</string>
+    <string name="conv_unit_mechanical_horsepower">英馬力</string>
+
+    <!-- Pressure -->
+    <string name="conv_unit_pascal">パスカル</string>
+    <string name="conv_unit_kilopascal">キロパスカル</string>
+    <string name="conv_unit_bar">バール</string>
+    <string name="conv_unit_atmosphere">気圧</string>
+    <string name="conv_unit_psi">重量ポンド毎平方インチ</string>
+    <string name="conv_unit_mmhg">水銀柱ミリメートル</string>
+</resources>

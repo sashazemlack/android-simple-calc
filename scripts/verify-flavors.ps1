@@ -14,8 +14,9 @@
 .EXAMPLE
   powershell -ExecutionPolicy Bypass -File scripts\verify-flavors.ps1            # build, then verify
   powershell -ExecutionPolicy Bypass -File scripts\verify-flavors.ps1 -SkipBuild # verify existing APKs
+  powershell -ExecutionPolicy Bypass -File scripts\verify-flavors.ps1 -BuildType release # signed release APKs
 #>
-param([switch]$SkipBuild)
+param([switch]$SkipBuild, [ValidateSet('debug', 'release')] [string]$BuildType = 'debug')
 
 $ErrorActionPreference = 'Stop'
 $root = Split-Path -Parent $PSScriptRoot
@@ -29,12 +30,13 @@ foreach ($tool in @($aapt2, $apkanalyzer)) { if (-not (Test-Path $tool)) { throw
 Push-Location $root
 try {
     if (-not $SkipBuild) {
-        & .\gradlew.bat assembleOfflineDebug assembleExchangeDebug --console=plain
+        $suffix = (Get-Culture).TextInfo.ToTitleCase($BuildType)
+        & .\gradlew.bat "assembleOffline$suffix" "assembleExchange$suffix" --console=plain
         if ($LASTEXITCODE -ne 0) { throw 'Gradle build failed' }
     }
 
-    $offline = Join-Path $root 'app\build\outputs\apk\offline\debug\app-offline-debug.apk'
-    $exchange = Join-Path $root 'app\build\outputs\apk\exchange\debug\app-exchange-debug.apk'
+    $offline = Join-Path $root "app\build\outputs\apk\offline\$BuildType\app-offline-$BuildType.apk"
+    $exchange = Join-Path $root "app\build\outputs\apk\exchange\$BuildType\app-exchange-$BuildType.apk"
     foreach ($apk in @($offline, $exchange)) { if (-not (Test-Path $apk)) { throw "APK not found: $apk" } }
 
     $script:failures = 0
@@ -76,8 +78,8 @@ try {
     Write-Host "      offline  applicationId = $offId"
     Write-Host "      exchange applicationId = $exId"
     Check ($offId -ne '' -and $exId -ne '' -and $offId -ne $exId) 'Application IDs are distinct'
-    Check (HasMatch $offBadging "application-label:'Calculator Offline'") 'Offline label is "Calculator Offline"'
-    Check (HasMatch $exBadging "application-label:'Calculator Exchange'") 'Exchange label is "Calculator Exchange"'
+    Check (HasMatch $offBadging "application-label:'Calculator'") 'Offline label is "Calculator"'
+    Check (HasMatch $exBadging "application-label:'Calculator'") 'Exchange label is "Calculator"'
     Check (HasMatch $offBadging "targetSdkVersion:'37'") 'Offline targetSdkVersion 37'
     Check (HasMatch $offBadging "minSdkVersion:'24'") 'Offline minSdkVersion 24'
     Check (HasMatch $exBadging "targetSdkVersion:'37'") 'Exchange targetSdkVersion 37'
@@ -96,7 +98,11 @@ try {
     $offPkgs = & $apkanalyzer dex packages --defined-only $offline
     $exPkgs = & $apkanalyzer dex packages --defined-only $exchange
     Check (-not (HasMatch $offPkgs 'com\.scalc\.calculator\.exchange')) 'Offline APK contains no com.scalc.calculator.exchange classes'
-    Check (HasMatch $exPkgs 'com\.scalc\.calculator\.exchange') 'Exchange APK contains com.scalc.calculator.exchange classes'
+    if ($BuildType -eq 'debug') {
+        Check (HasMatch $exPkgs 'com\.scalc\.calculator\.exchange') 'Exchange APK contains com.scalc.calculator.exchange classes'
+    } else {
+        Write-Host 'SKIP  Exchange class-name check (R8 renames classes in release builds; the provider-URL check below still applies)'
+    }
     # Material, Play Services, Firebase, Play Core / Play Integrity, Play Billing, ML Kit, GMS/Firebase
     # transport, other proprietary Google client libraries and ads SDKs.
     $forbidden = 'androidx\.compose\.material|com\.google\.android\.material|com\.google\.android\.gms|com\.google\.firebase|com\.google\.android\.play|com\.android\.billingclient|com\.google\.mlkit|com\.google\.android\.datatransport|com\.google\.android\.libraries|com\.google\.ads'
@@ -117,6 +123,16 @@ try {
     Check ($null -eq $hit) ("Offline APK contains no exchange provider strings" + $(if ($hit) { " (found: $hit)" } else { '' }))
     $exHit = ApkContainsText $exchange @('api.frankfurter.dev')
     Check ($null -ne $exHit) 'Exchange APK references the exchange-rate provider'
+
+    if ($BuildType -eq 'release') {
+        Write-Host "`n== Signatures"
+        $apksigner = Join-Path $env:ANDROID_HOME 'build-tools\37.0.0\apksigner.bat'
+        foreach ($apk in @($offline, $exchange)) {
+            $out = & $apksigner verify --print-certs $apk 2>&1
+            Check ($LASTEXITCODE -eq 0) ('Signature verifies: ' + (Split-Path $apk -Leaf))
+            $out | Where-Object { "$_" -match 'certificate DN|SHA-256 digest' } | ForEach-Object { Write-Host "      $_" }
+        }
+    }
 
     Write-Host ''
     if ($script:failures -gt 0) { Write-Host "$script:failures check(s) FAILED" -ForegroundColor Red; exit 1 }
