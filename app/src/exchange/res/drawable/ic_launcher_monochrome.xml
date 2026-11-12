@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Exchange flavor themed-icon layer (Android 13+). The launcher tints it with SRC_IN, so only
+  alpha carries the shape: everything is opaque white or transparent. Same geometry as
+  ic_launcher_foreground, but the badge is an outlined ring with white arrows instead of a filled
+  disc with colored arrows, and the calculator is cut away around the badge.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <group android:name="calculator">
+        <!--
+          Whole canvas (clockwise) minus a circle of radius 17 around the badge center (72,67),
+          drawn counter-clockwise so the non-zero winding rule leaves it out.
+        -->
+        <clip-path android:pathData="M0,0 L108,0 L108,108 L0,108 Z M71.99,50 A17,17 0 1,0 72,50 Z" />
+        <path
+            android:fillColor="#00000000"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="3"
+            android:pathData="M33,26 L59,26 Q62,26 62,29 L62,75 Q62,78 59,78 L33,78 Q30,78 30,75 L30,29 Q30,26 33,26 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M35,32 L57,32 L57,41 L35,41 Z" />
+        <path
+            android:fillColor="#FFFFFFFF"
+            android:pathData="M35,47h5v5h-5z M43.5,47h5v5h-5z M52,47h5v5h-5z M35,56h5v5h-5z M43.5,56h5v5h-5z M35,65h5v5h-5z M43.5,65h5v5h-5z" />
+    </group>
+    <!-- Badge ring: radius 13 around (72,67), like the foreground's disc. -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2"
+        android:pathData="M72,54 A13,13 0 1,1 71.99,54 Z" />
+    <!-- Exchange arrows, as in the foreground but white. -->
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FFFFFFFF"
+        android:strokeWidth="2.6"
+        android:strokeLineCap="round"
+        android:strokeLineJoin="round"
+        android:pathData="M64,63 L79,63 M75,59 L79,63 L75,67 M80,71 L65,71 M69,67 L65,71 L69,75" />
+</vector>

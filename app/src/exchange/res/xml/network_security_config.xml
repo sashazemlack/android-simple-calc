@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Exchange flavor only. HTTPS everywhere with the platform trust store.
+
+  www.ecb.europa.eu (fallback rate source) presents a chain ending at "Sectigo Public Server
+  Authentication Root E46" (2021) without a cross-certificate. Android 7.0 to 13 do not ship that
+  root, so for this single host it is trusted in addition to the system store.
+  Bundled root: SHA-256 C9:0F:26:F0:FB:1B:40:18:B2:22:27:51:9B:5C:A2:B5:3E:2C:A5:B3:BE:5C:F1:8E:FE:1B:EF:47:38:0C:53:83,
+  valid until 2046-03-21.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="false">www.ecb.europa.eu</domain>
+        <trust-anchors>
+            <certificates src="system" />
+            <certificates src="@raw/sectigo_public_server_authentication_root_e46" />
+        </trust-anchors>
+    </domain-config>
+</network-security-config>

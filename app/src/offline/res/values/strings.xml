@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator Offline</string>
+    <string name="about_flavor">Works completely offline. This app has no network permission and never connects to the internet.</string>
+</resources>

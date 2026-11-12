@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Exchange flavor only: network access for daily exchange-rate downloads. The network security
+  config denies cleartext traffic (HTTPS only) and trusts the ECB fallback host's root on old
+  Android versions.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application android:networkSecurityConfig="@xml/network_security_config" />
+
+</manifest>

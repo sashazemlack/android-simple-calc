@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Calculator Exchange</string>
+    <string name="about_flavor">Calculator and unit converter work offline. Exchange rates are the European Central Bank euro reference rates (via frankfurter.dev), downloaded at most once a day or when you pull down to refresh. Cross rates are calculated on the device; your amounts are never sent anywhere. Rates are for information only, not for transactions.</string>
+    <string name="tab_exchange">Exchange Rate</string>
+</resources>
